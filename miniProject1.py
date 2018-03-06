@@ -1,13 +1,18 @@
+# Citations
 
+
+# Import modules
 from hashlib import pbkdf2_hmac
 import time
 import sqlite3
 
+# Global variables
 connection = None
 cursor = None
 logout=False
 
 
+# Creates the tables accessed by the system
 def create_tables():
 	global connection, cursor
 
@@ -149,16 +154,19 @@ def create_tables():
 	connection.commit()
 
 
-#Encrypts a user enterd password
+
+
+#Checks the database to authenticate what the user entered is correct
 def Authenticate(username, entered_pwd):
 	global connection, cursor
 
+	# Hashed it using code given
 	hash_name = 'sha256'
 	salt = 'ssdirf993lksiqb4'
 	iterations = 100000
 	dk = pbkdf2_hmac(hash_name, bytearray(entered_pwd, 'ascii'), bytearray(salt, 'ascii'), iterations)
 	
-	#Check User
+
 	#Get user password from database 
 	t1= (username,)
 	cursor.execute('''
@@ -168,65 +176,122 @@ def Authenticate(username, entered_pwd):
 	database_pwd= cursor.fetchone()
 	connection.commit()
 
+
+	# Check if password exists
 	if (dk==database_pwd):
-		print("Successful")
 		return True
 
 	else:
-		print("UnSuccessful")
 		return False
 
 			
-
-
-
-def Functionality():
+def account_manager():
 	pass
 
+def supervisors():
+	pass
+
+def dispatchers():
+	pass
+
+def drivers():
+	pass
+
+# Depending on the role, GateKeeper for that tasks asociated to that role
+def Role_GateKeeper(role):
+
+	if (role=="Account managers"):
+		account_manager()
+
+	elif (role== "Supervisors"):
+		supervisors()
+
+	elif (role== "Dispatchers"):
+		dispatchers()
+
+	else:
+		drivers()
 
 
+
+
+# Logs user out of the system
 def LogOut():
 	global connection, cursor, logout
 
-
 	logout=True
+
+
+
+
+
+# Function find_role returns the role associated to that particular username
+def find_role(username):
+	t1= (username,)
+	cursor.execute('''
+		select role 
+		from users
+		where login=?''', t1)
+	role= cursor.fetchone()
+	# Return the role of the user
+	return role
+
+
+
+
 
 
 
 def main():
 	global connection, cursor, logout
 
+	# Initialized the path to the database
 	connection= sqlite3.connect("./waste_management.db")
-	# set the cusor to the cursor of the database
+	# Set the cusor to the cursor of the database
 	cursor= connection.cursor()
 
 	# Call to the Create Table Function
 	create_tables()
 
+	# Loop to login to the system 
 	while (logout==False):
 
+		# Get username from user
 		username = input('Enter username or Enter q to exit: ')
+		# Check to see if user enetered q to quit
 		if (username=="q" or username=="Q"):
 			break
 
 		else: 
+			# get password from password
 			pwd = input('Enter a password or Enter q to exit: ')
+			# Check to see if user enetered q to quit
 			if (pwd=="q" or pwd=="Q"):
 				break
 
+			# Call to authenticate the user
 			status=Authenticate(username, pwd)
 
+			# If login successful find a role
 			if status==True:
-				functionality(role, username)
+				role= find_role(username)
+				role_GateKeeper(role)
 
+			# Else Login is not successful, loop back to login 
 			else:
 				print("Username and password do not Match")
 				print()
 				print()
 				continue	
 
-				
-	print("Exited")
+	print()
+	print()	
+	print("GoodBye")
+
+
+
+
+
 main()
 	
 
