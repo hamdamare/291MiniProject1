@@ -262,59 +262,9 @@ def create_tables():
 	cursor.execute(' PRAGMA forteign_keys=ON; ')
 	connection.commit()
 
-def insert_data():
-	cursor.executescript('''
-		--information about account managers
-	INSERT INTO personnel VALUES('34725','Dan','matloff@sbcglobal.net','Windsor Drive','55263');
-	INSERT INTO personnel VALUES('42134','Charlotte','mjewell@optonline.net','Maple Avenue','52284');
-	INSERT INTO personnel VALUES('16830','Grady','panolex@sbcglobal.net','Hillcrest Avenue','37764');
-	INSERT INTO personnel VALUES('73709','Carina','phyruxus@me.com','Schoolhouse Lane','74321');
-	INSERT INTO personnel VALUES('15625','Cameron','harryh@icloud.com','Cambridge Court','16391');
 
-
-	INSERT INTO users VALUES('34725','Account manager','Dan','pass1');
-	INSERT INTO users VALUES('42134','Account manager','Charlotte','pass2');
-	INSERT INTO users VALUES('16830','Account manager','Grady','pass3');
-	INSERT INTO users VALUES('73709','Account manager','Carina','pass4');
-	INSERT INTO users VALUES('15625','Account manager','Cameron','pass5');
-
-	INSERT INTO account_managers VALUES('34725','small accounts manager','8th Street South');
-	INSERT INTO account_managers VALUES('42134','major accounts manager','Main Street West');
-	INSERT INTO account_managers VALUES('16830','medium accounts manager','Magnolia Court');
-	INSERT INTO account_managers VALUES('73709','medium accounts manager','Route 4');
-	INSERT INTO account_managers VALUES('15625','medium accounts manager','Park Avenue');
-
-	INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
-	INSERT INTO accounts VALUES('73833854','42134','Reese Thornton','(745) 516-3060','commercial','2004-01-18 03:26:06','2013-02-09 15:56:27',893618.73);
-	INSERT INTO accounts VALUES('34910788','16830','Jarrett Castro','(883) 338-6912','commercial','2007-01-28 20:29:51','2019-11-06 10:14:50',658737.09);
-	INSERT INTO accounts VALUES('12029871','73709','Areli Lowery','(706) 692-2734','industrial','2000-08-03 20:48:36','2018-03-07 04:15:21',322370.9);
-	INSERT INTO accounts VALUES('85043375','15625','Lilyana Gaines','(425) 810-3987','municipal','2003-04-02 7:38:38','2016-02-10 21:45:17',111695.11);
-
-
-	INSERT INTO service_agreements VALUES('1','87625036','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
-	INSERT INTO service_agreements VALUES('2','73833854','Essex Court','mixed waste','every Wednesday of every week','(947) 900-1946',657.8,1643);
-	INSERT INTO service_agreements VALUES('3','34910788','Circle Drive','construction waste','every Monday of every week','(149) 953-8810',360.87,1225);
-	INSERT INTO service_agreements VALUES('4','12029871','Delaware Avenue','hazardous waste','every Friday of every week','(306) 162-4684',464.2,1609);
-	INSERT INTO service_agreements VALUES('5','85043375','Atlantic Avenue','metal','every Saturday of every week','(923) 798-0938',412.44,2601);
-	''')
-	connection.commit()
-
-
-<<<<<<< HEAD
-		
-def account_manager(username):
-	global connection, cursor
-	# We select the customer information of all the customers that the user manages
-	#then we run our query which outputs the customer information that this manager manages
-	cursor.execute('''SELECT DISTINCT s.service_no,a.customer_name, a.contact_info, a.customer_type
-	FROM accounts a, service_agreements s, account_managers m, personnel p
-	WHERE s.master_account = a.account_no AND a.account_mgr = m.pid AND p.pid= username
-	GROUP BY s.service_no
-	;''')
-	connection.commit()
 def supervisors():
 	pass
-=======
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------ACCOUNT MANAGER Functonality----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -403,7 +353,7 @@ def Dispatcher_getService_no():
 	rows=cursor.fetchall()
 	
 	# Allow dispatcher to choose from it
->>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
+
 
 	print()
 	print("SELECT ONE SERVICE NO FROM THE FOLLOWING SERVICE AGREEMENTS:")
@@ -712,13 +662,11 @@ def find_role(username):
 		select role 
 		from users
 		where login=?''', t1)
-<<<<<<< HEAD
+
 	role = cursor.fetchone()
-=======
+
 	role= cursor.fetchone()
 	connection.commit()
-
->>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
 	# Return the role of the user
 	return role[0]
 
@@ -740,6 +688,7 @@ def role_GateKeeper(role):
 		else:
 			driver()
 
+
 #Checks the database to authenticate what the user entered is correct
 def Authenticate(entered_pwd,username):
 	global connection, cursor
@@ -749,8 +698,8 @@ def Authenticate(entered_pwd,username):
 	salt = 'ssdirf993lksiqb4'
 	iterations = 100000
 
+
 	t1=(username,)
-		
 	#Selects the password from the table associated to the user
 	cursor.execute('SELECT password FROM users WHERE login = ?',t1)
 	rows = cursor.fetchall()
@@ -763,6 +712,8 @@ def Authenticate(entered_pwd,username):
 		if dk == dk2:
 			status = True	
 	return status
+
+
 
 
 #Allows user to log in succesfully with previous username and previous password
@@ -802,56 +753,18 @@ def login():
 
 
 		# If Login is not successful, loop back to login
-		if status != True:
+		if not status:
 			print("Username and password do not Match")
 			print 2*'\n'
 			continue
 
 
-<<<<<<< HEAD
-		if status == True:
+		if status:
 			print"Welcome ",  username
 			role = find_role(username)
 			Role_GateKeeper(role)
 			break
-		
-=======
-#Checks the database to authenticate what the user entered is correct
-def Authenticate(username, entered_pwd):
-	global connection, cursor
 
-	# Hashed it using code given
-	dk= (encrypt(entered_pwd),)
-
-	#Get user password from database 
-	t1= (username,)
-	cursor.execute('''
-		select password 
-		from users
-		where login=?''', t1)
-
-	database_pwd= cursor.fetchone()
-	database_pwd=database_pwd
-	connection.commit()
-
-	# Check if password exists
-	if (dk==database_pwd):
-		return True
-
-	else:
-		return False
-
-
-# Encrypt the Password
-def encrypt(entered_pwd):
-	hash_name = 'sha256'
-	salt = 'ssdirf993lksiqb4'
-	iterations = 100000
-	dk = pbkdf2_hmac(hash_name, bytearray(entered_pwd, 'ascii'), bytearray(salt, 'ascii'), iterations)
-	return dk
-
-
->>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
 
 def main():
 	global connection, cursor, logout
@@ -862,60 +775,14 @@ def main():
 	cursor= connection.cursor()
 	# Call to the Create Table Function
 	create_tables()
-<<<<<<< HEAD
-	# Call to populate the tables
-	insert_data()
-
 	# Loop to login to the system 
 	login()
 	if LogOut == True:
 		print
 		print	
 		print("GoodBye")
-
-
-
-
-
-=======
 	add_data()
 
-	# Loop to login to the system 
-	while (logout==False):
-
-		# Get username from user
-		print()
-		username = input('ENTER USERNAME OR ENTER q TO EXIT: ')
-		# Check to see if user enetered q to quit
-		if (username=="q" or username=="Q"):
-			break
-
-		else: 
-			# get password from password
-			pwd = input('ENTER PASSWORD OR ENTER q TO EXIT: ')
-			# Check to see if user enetered q to quit
-			if (pwd=="q" or pwd=="Q"):
-				break
-		
-			# Call to authenticate the user
-			status=Authenticate(username, pwd)
-
-			# If login successful find a role
-			if status==True:
-				role= find_role(username)
-				role_GateKeeper(role)
-
-			# Else Login is not successful, loop back to login 
-			else:
-				print("Username and password do not Match")
-				print()
-				print()
-				continue	
-
-	print()
-	print("GoodBye")
-	print("\n"*80)
->>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
 main()
 	
 
