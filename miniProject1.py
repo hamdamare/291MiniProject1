@@ -5,6 +5,7 @@ from hashlib import pbkdf2_hmac
 import time
 import sqlite3
 import datetime
+import time
 
 # Global variables
 connection = None
@@ -17,19 +18,12 @@ def add_data():
 	global connection, cursor
 
 
-	cursor.execute('''
-		INSERT INTO users VALUES('1111','dispatcher', 'hamse', ?)''',(encrypt('hamse1'),))
-	cursor.execute('''
-		INSERT INTO users VALUES('2111','driver', 'ham', ?)''',(encrypt('hamse'),))
-	cursor.execute('''
-		INSERT INTO users VALUES('3111','account manager', 'hamda', ?)''',(encrypt('hamda1'),))
-	cursor.execute('''
-		INSERT INTO users VALUES('4111','supervisor', 'ayub', ?)''',(encrypt('ayub1'),))
-	connection.commit()
 
 
 	cursor.executescript(
-		'''	--trucks owned by company
+
+
+		'''	
 		INSERT INTO trucks VALUES('1111','Ford F-Series','roll-off');
 		INSERT INTO trucks VALUES('1222','Honda Ridgeline','garbage bin collector');
 		INSERT INTO trucks VALUES('1333','Cadillac Escalade EXT','front loader');
@@ -40,6 +34,41 @@ def add_data():
 		INSERT INTO trucks VALUES('2222','Honda Ridgeline','garbage bin collector');
 		INSERT INTO trucks VALUES('2333','Cadillac Escalade EXT','front loader');
 		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
+
+		--Users 
+		INSERT INTO users VALUES('34725','Account manager','Dan','pass1');
+		INSERT INTO users VALUES('42134','Account manager','Charlotte','pass2');
+		INSERT INTO users VALUES('16830','Account manager','Grady','pass3');
+		INSERT INTO users VALUES('73709','Account manager','Carina','pass4');
+		INSERT INTO users VALUES('15625','Account manager','Cameron','pass5');
+		INSERT INTO users VALUES('56468','Account manager','Roderick','pass6');
+		INSERT INTO users VALUES('81480','Account manager','Katrina','pass7');
+		INSERT INTO users VALUES('48660','Account manager','Jeremy','pass8');
+
+		--Accounts
+		INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
+		INSERT INTO accounts VALUES('73833854','42134','Reese Thornton','(745) 516-3060','commercial','2004-01-18 03:26:06','2013-02-09 15:56:27',893618.73);
+		INSERT INTO accounts VALUES('34910788','16830','Jarrett Castro','(883) 338-6912','commercial','2007-01-28 20:29:51','2019-11-06 10:14:50',658737.09);
+		INSERT INTO accounts VALUES('12029871','73709','Areli Lowery','(706) 692-2734','industrial','2000-08-03 20:48:36','2018-03-07 04:15:21',322370.9);
+		INSERT INTO accounts VALUES('85043375','15625','Lilyana Gaines','(425) 810-3987','municipal','2003-04-02 7:38:38','2016-02-10 21:45:17',111695.11);
+		INSERT INTO accounts VALUES('72149574','56468','Lila Sloan','(626) 284-7432','industrial','2002-11-15 12:31:42','2018-04-04 02:55:07',767403.0);
+		INSERT INTO accounts VALUES('23593363','34725','Alonzo Shea','(496) 102-3035','commercial','2006-07-25 10:39:12','2019-07-22 16:51:29',428144.53);
+
+
+		--Service agreements
+
+		INSERT INTO service_agreements VALUES('1','87625036','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
+		INSERT INTO service_agreements VALUES('2','73833854','Essex Court','mixed waste','every Wednesday of every week','(947) 900-1946',657.8,1643);
+		INSERT INTO service_agreements VALUES('3','34910788','Circle Drive','construction waste','every Monday of every week','(149) 953-8810',360.87,1225);
+		INSERT INTO service_agreements VALUES('4','12029871','Delaware Avenue','hazardous waste','every Friday of every week','(306) 162-4684',464.2,1609);
+		INSERT INTO service_agreements VALUES('5','85043375','Atlantic Avenue','metal','every Saturday of every week','(923) 798-0938',412.44,2601);
+
+		--Personnel
+		INSERT INTO personnel VALUES('34725','Dan','matloff@sbcglobal.net','Windsor Drive','55263');
+		INSERT INTO personnel VALUES('42134','Charlotte','mjewell@optonline.net','Maple Avenue','52284');
+		INSERT INTO personnel VALUES('16830','Grady','panolex@sbcglobal.net','Hillcrest Avenue','37764');
+		INSERT INTO personnel VALUES('73709','Carina','phyruxus@me.com','Schoolhouse Lane','74321');
+		INSERT INTO personnel VALUES('15625','Cameron','harryh@icloud.com','Cambridge Court','16391');
 
 
 		--maintenance_records of drivers owned trucks
@@ -93,29 +122,17 @@ def add_data():
 
 
 
-		--information about account managers
-		INSERT INTO personnel VALUES('11111','Hamse Mare','matloff@sbcglobal.net','Windsor Drive','55263');
-
 		--information about drivers who own a truck
 		INSERT INTO personnel VALUES('12222','Ayub Ahmed','mjewell@optonline.net','Maple Avenue','52284');
 			
 		--drivers who do not own a truck
 		INSERT INTO personnel VALUES('13333','Hamda Mare','panolex@sbcglobal.net','Hillcrest Avenue','37764');
-		
-
-
-		INSERT INTO account_managers VALUES('11111','small accounts manager','8th Street South');
 
 		--drivers who own a truck
 		INSERT INTO drivers VALUES('12222','Single Trailer','2111');
 
 		--drivers who do not own a truck
 		INSERT INTO drivers VALUES('13333','HAZMAT',NULL);
-
-		INSERT INTO accounts VALUES('1111111','11111','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
-	
-		INSERT INTO service_agreements VALUES('1','1111111','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
-		INSERT INTO service_agreements VALUES('2','1111111','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
 		INSERT INTO service_fulfillments VALUES('2015-07-30 03:47:43','1111111','1','2111','12222','1','NULLID');''')
 	connection.commit()
 
@@ -336,9 +353,6 @@ def add_service_fulliment(date_time, master_account, service_no, truck_id, drive
 	connection.commit()
 
 
-
-
-
 # Get the service Agreement
 def Dispatcher_getService_no():
 	global connection, cursor
@@ -353,8 +367,6 @@ def Dispatcher_getService_no():
 	rows=cursor.fetchall()
 	
 	# Allow dispatcher to choose from it
-
-
 	print()
 	print("SELECT ONE SERVICE NO FROM THE FOLLOWING SERVICE AGREEMENTS:")
 	
@@ -381,9 +393,6 @@ def Dispatcher_getService_no():
 
 	# Return the service no choosen from the dispatcher
 	return service_no
-
-
-
 
 # Select the driver to fulfill a task
 def Dispatcher_getDriver():
@@ -417,8 +426,6 @@ def Dispatcher_getDriver():
 		else:
 			break
 	return driver
-
-
 
 # QUESTION 1
 # If a driver is selected who owns a truck, that truck should be automatically selected; 
@@ -479,8 +486,6 @@ def Dispatcher_getTruck(driver):
 	
 	return truck
 
-
-
 # QUESTION 2
 # Get the container that were picking up
 def Dispatcher_getPickUp(service_no):
@@ -523,8 +528,6 @@ def Dispatcher_getPickUp(service_no):
 
 	# Return the container to be picked up 
 	return container
-
-
 
 # QUESTION 3
 # Get the container that were dropping off
@@ -581,17 +584,12 @@ def Dispatcher_getDropOff(service_no):
 	# Return the container being dropped off
 	return container
 
-
-
 # Question 4
 # Set the date for a particular entry
 def setDate():
 	date_array=[]
-
-
 	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
 	while True:
-
 		# GET THE YEAR
 		while True:
 			year=input("ENTER THE YEAR (FORMAT YYYY) : ")
@@ -619,37 +617,24 @@ def setDate():
 				break
 			else:
 				continue
-
-
 		# Validate the date the user entered
 		date= datetime.datetime.strptime(date_array[0]+'-'+date_array[1]+'-'+date_array[2], '%Y-%m-%d')
-		
-
 		print(date)
 		print(datetime.datetime.now())
 		if(datetime.datetime.now()<date):
 			break
 		else:
-			print("TRY AGAIN (DATE HAS PASSED, ", end=" ")
+			#print("TRY AGAIN (DATE HAS PASSED, ", end=" ")
 			continue
-		
 	# return the date
 	return date
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
 # Logs user out of the system
-def Log_out():
+def LogOut():
 	global connection, cursor, logout
-
 	logout=False
 	return logout
 
@@ -658,35 +643,34 @@ def find_role(username):
 	global connection, cursor
 
 	t1= (username,)
-	cursor.execute('''
-		select role 
-		from users
-		where login=?''', t1)
-
-	role = cursor.fetchone()
-
-	role= cursor.fetchone()
+	cursor.execute('SELECT role FROM users WHERE login=?', t1)
+	role = cursor.fetchall()
 	connection.commit()
 	# Return the role of the user
 	return role[0]
+	print(role)
 
 
 # Depending on the role, GateKeeper for that tasks asociated to that role
-def role_GateKeeper(role):
+def Role_GateKeeper(role):
 	global logout
 	while logout==False:
-		
 		if (role=="account manager"):
 			account_manager()
-
+			break
+			
 		elif (role== "supervisor"):
 			supervisor()
-
+			break
+			
 		elif (role== "dispatcher"):
 			dispatcher()
-
+			break
+			
 		else:
 			driver()
+			break
+			
 
 
 #Checks the database to authenticate what the user entered is correct
@@ -698,12 +682,10 @@ def Authenticate(entered_pwd,username):
 	salt = 'ssdirf993lksiqb4'
 	iterations = 100000
 
-
 	t1=(username,)
 	#Selects the password from the table associated to the user
-	cursor.execute('SELECT password FROM users WHERE login = ?',t1)
+	cursor.execute('SELECT password FROM users WHERE login==?',t1)
 	rows = cursor.fetchall()
-
 	#If hashed password is the same as the hashed database password then login is successful
 	for row in rows:
 		db_pass = row[0]
@@ -720,15 +702,16 @@ def Authenticate(entered_pwd,username):
 def login():
 	global cursor, connection
 	#logout is whether or not user has logged out
-	logout = LogOut()
-
-	while not logout:
-		print'_____________________WELCOME_____________________'
-		print 5*'\n'
+	login = False
+	#user must not have logged in yet to login
+	while not login:
+		#if user has logged out we dont have to login
+		if logout == True:
+			break
+		print'\n'
 
 		#get username
 		username = raw_input("Please enter your username: ")
-		print '\n'
 		# Check to see if user enetered q to quit
 		if (username=="q" or username=="Q"):
 			print 'GoodBye'
@@ -737,33 +720,28 @@ def login():
 		#get password
 		psw = raw_input("Please enter your password: ")
 		print '\n'
+		print 'Authenticating............'
+		time.sleep(0.3)
+		
+
 		# Check to see if user enetered q to quit
-		if (username=="q" or username=="Q"):
+		if (psw=="q" or psw=="Q"):
 			print 'GoodBye'
 			break
 
-
-		t1=(username,)
-		#Selects the password from the table associated to the user
-		cursor.execute('SELECT password FROM users WHERE login = ?',t1)
-		rows = cursor.fetchall()
-
 		#If hashed password is the same as the hashed database password then login is successful
 		status = Authenticate(psw,username)
-
-
 		# If Login is not successful, loop back to login
 		if not status:
-			print("Username and password do not Match")
-			print 2*'\n'
+			print("\nUsername and password Do Not Match")
+			print
 			continue
-
-
+		#if the user successfully logged in we find its roles
 		if status:
-			print"Welcome ",  username
+			print "\nWelcome",username
+			login = True
 			role = find_role(username)
 			Role_GateKeeper(role)
-			break
 
 
 def main():
@@ -776,12 +754,13 @@ def main():
 	# Call to the Create Table Function
 	create_tables()
 	# Loop to login to the system 
+	add_data()
 	login()
 	if LogOut == True:
 		print
 		print	
 		print("GoodBye")
-	add_data()
+	
 
 main()
 	
