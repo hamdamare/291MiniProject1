@@ -4,11 +4,121 @@
 from hashlib import pbkdf2_hmac
 import time
 import sqlite3
+import datetime
 
 # Global variables
 connection = None
 cursor = None
 logout=False
+
+
+# ADD DATA TO THE TABLE
+def add_data():
+	global connection, cursor
+
+
+	cursor.execute('''
+		INSERT INTO users VALUES('1111','dispatcher', 'hamse', ?)''',(encrypt('hamse1'),))
+	cursor.execute('''
+		INSERT INTO users VALUES('2111','driver', 'ham', ?)''',(encrypt('hamse'),))
+	cursor.execute('''
+		INSERT INTO users VALUES('3111','account manager', 'hamda', ?)''',(encrypt('hamda1'),))
+	cursor.execute('''
+		INSERT INTO users VALUES('4111','supervisor', 'ayub', ?)''',(encrypt('ayub1'),))
+	connection.commit()
+
+
+	cursor.executescript(
+		'''	--trucks owned by company
+		INSERT INTO trucks VALUES('1111','Ford F-Series','roll-off');
+		INSERT INTO trucks VALUES('1222','Honda Ridgeline','garbage bin collector');
+		INSERT INTO trucks VALUES('1333','Cadillac Escalade EXT','front loader');
+		INSERT INTO trucks VALUES('1444','Chevrolet Colorado','garbage bin collector');
+
+		--trucks owned by drivers
+		INSERT INTO trucks VALUES('2111','Ford F-Series','roll-off');
+		INSERT INTO trucks VALUES('2222','Honda Ridgeline','garbage bin collector');
+		INSERT INTO trucks VALUES('2333','Cadillac Escalade EXT','front loader');
+		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
+
+
+		--maintenance_records of drivers owned trucks
+		INSERT INTO maintenance_records VALUES('2111','2011-08-30 19:19:46','Inspection');
+		INSERT INTO maintenance_records VALUES('2222','2011-08-23 19:19:46','repair');
+		INSERT INTO maintenance_records VALUES('2333','2011-08-13 19:19:46','Inspection');
+		INSERT INTO maintenance_records VALUES('2444','2011-08-03 19:19:46','repair');
+
+		--maintenance_records of company owned trucks
+		INSERT INTO maintenance_records VALUES('1111','2011-08-30 19:19:46','Inspection');
+		INSERT INTO maintenance_records VALUES('1222','2011-08-23 19:19:46','repair');
+		INSERT INTO maintenance_records VALUES('1333','2011-08-13 19:19:46','Inspection');
+		INSERT INTO maintenance_records VALUES('1444','2011-08-03 19:19:46','repair');
+
+
+		--Dummy containers
+		INSERT INTO containers VALUES('NULLID','Dummy Container','2015-03-10 20:42:44');
+
+		--real containers
+		INSERT INTO containers VALUES('1','Auger Compactor','2015-03-10 20:42:44');
+		INSERT INTO containers VALUES('2','Roll-Off dumpster','2009-10-24 02:53:48');
+		INSERT INTO containers VALUES('3','Closed-Topped','2016-12-10 06:14:33');
+		INSERT INTO containers VALUES('4','Open-Topped','2012-04-23 09:35:36');
+		INSERT INTO containers VALUES('5','Hydraulic Compactor','2015-03-10 20:42:44');
+		INSERT INTO containers VALUES('6','Roll-Off dumpster','2009-10-24 02:53:48');
+		INSERT INTO containers VALUES('7','Open-Topped','2016-12-10 06:14:33');
+		INSERT INTO containers VALUES('8','Closed-Topped','2012-04-23 09:35:36');
+		INSERT INTO containers VALUES('9','Auger Compactor','2016-12-10 06:14:33');
+		INSERT INTO containers VALUES('10','Hydraulic Compactor','2012-04-23 09:35:36');
+
+
+		INSERT INTO waste_types VALUES('plastic');
+		INSERT INTO waste_types VALUES('paper');
+		INSERT INTO waste_types VALUES('hazardous waste');
+		INSERT INTO waste_types VALUES('construction waste');
+		INSERT INTO waste_types VALUES('mixed waste');
+		INSERT INTO waste_types VALUES('metal');
+		INSERT INTO waste_types VALUES('compost');
+
+
+		INSERT INTO container_waste_types VALUES('1','mixed waste');
+		INSERT INTO container_waste_types VALUES('2','paper');
+		INSERT INTO container_waste_types VALUES('3','mixed waste');
+		INSERT INTO container_waste_types VALUES('4','construction waste');
+		INSERT INTO container_waste_types VALUES('5','hazardous waste');
+		INSERT INTO container_waste_types VALUES('6','compost');
+		INSERT INTO container_waste_types VALUES('7','construction waste');
+		INSERT INTO container_waste_types VALUES('8','hazardous waste');
+		INSERT INTO container_waste_types VALUES('9','plastic');
+		INSERT INTO container_waste_types VALUES('10','hazardous waste');
+
+
+
+		--information about account managers
+		INSERT INTO personnel VALUES('11111','Hamse Mare','matloff@sbcglobal.net','Windsor Drive','55263');
+
+		--information about drivers who own a truck
+		INSERT INTO personnel VALUES('12222','Ayub Ahmed','mjewell@optonline.net','Maple Avenue','52284');
+			
+		--drivers who do not own a truck
+		INSERT INTO personnel VALUES('13333','Hamda Mare','panolex@sbcglobal.net','Hillcrest Avenue','37764');
+		
+
+
+		INSERT INTO account_managers VALUES('11111','small accounts manager','8th Street South');
+
+		--drivers who own a truck
+		INSERT INTO drivers VALUES('12222','Single Trailer','2111');
+
+		--drivers who do not own a truck
+		INSERT INTO drivers VALUES('13333','HAZMAT',NULL);
+
+		INSERT INTO accounts VALUES('1111111','11111','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
+	
+		INSERT INTO service_agreements VALUES('1','1111111','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
+		INSERT INTO service_agreements VALUES('2','1111111','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
+		INSERT INTO service_fulfillments VALUES('2015-07-30 03:47:43','1111111','1','2111','12222','1','NULLID');''')
+	connection.commit()
+
 
 
 # Creates the tables accessed by the system
@@ -18,7 +128,6 @@ def create_tables():
 	cursor.executescript('''
 	-- CMPUT 291 - Winter 2018 
 	-- TABLES for Project #1, assuming SQLite as database engine (uses the TEXT data type) 
-
 
 	-- The following commands drops the tables in case they exist from earlier runs. 
 	DROP TABLE IF EXISTS users;
@@ -150,6 +259,7 @@ def create_tables():
 	  FOREIGN KEY (cid_drop_off) REFERENCES containers(container_id),
 	  FOREIGN KEY (cid_pick_up) REFERENCES containers(container_id)
 	);''')
+	cursor.execute(' PRAGMA forteign_keys=ON; ')
 	connection.commit()
 
 def insert_data():
@@ -190,6 +300,7 @@ def insert_data():
 	connection.commit()
 
 
+<<<<<<< HEAD
 		
 def account_manager(username):
 	global connection, cursor
@@ -203,51 +314,431 @@ def account_manager(username):
 	connection.commit()
 def supervisors():
 	pass
+=======
 
-def dispatchers():
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------ACCOUNT MANAGER Functonality----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def account_manager():
 	pass
 
-def drivers():
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------SUPERVISOR FUNCTIONALIT----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def supervisor():
 	pass
 
-# Depending on the role, GateKeeper for that tasks asociated to that role
-def Role_GateKeeper(role):
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------DRIVER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	if (role=="Account managers"):
-		account_manager()
+def driver():
+	pass
 
-	elif (role== "Supervisors"):
-		supervisors()
 
-	elif (role== "Dispatchers"):
-		dispatchers()
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------DISPATCHER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def dispatcher():
+	global connection, cursor
+
+	print("WELCOME DISPATCHER!!")
+	print("\n\n")
+
+	# Select a service_agreement, driver, truck, and a container to be dropped off and picked up
+	
+	# Select a service no for a particular service agreement
+	service_no= Dispatcher_getService_no()
+
+	# Select a driver
+	driver= Dispatcher_getDriver()
+
+	# Select a truck depending on if the driver owns a truck, if they do then automatically truck is set
+	# Else Choose a truck
+	truck=Dispatcher_getTruck(driver)
+
+	# Get the cointainer getting picked up
+	cid_pick_up= Dispatcher_getPickUp(service_no)
+
+	# Select the container being dropped off
+	cid_drop_off= Dispatcher_getDropOff(service_no)
+	print()
+	print()
+
+	# Set the date
+	date=setDate()
+
+	#Create entries in the table service_fulfillments for upcoming days
+	add_service_fulliment(date, '2', service_no, truck, driver, cid_drop_off, cid_pick_up)
+
+
+
+
+# Add the entry to the service_fulliment table with the following data
+def add_service_fulliment(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up):
+	global connection, cursor
+
+	cursor.execute('''
+		INSERT INTO service_fulfillments VALUES(?,?,?,?,?,?,?)''',(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up) )
+	connection.commit()
+
+
+
+
+
+# Get the service Agreement
+def Dispatcher_getService_no():
+	global connection, cursor
+	
+	# Get all the rows in the service agreements
+	cursor.execute('''
+		select *
+		from service_agreements
+		group by service_no
+		''')
+	connection.commit()
+	rows=cursor.fetchall()
+	
+	# Allow dispatcher to choose from it
+>>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
+
+	print()
+	print("SELECT ONE SERVICE NO FROM THE FOLLOWING SERVICE AGREEMENTS:")
+	
+	values=["SERVICE NO", "MASTER ACCOUNT", "LOCATION", "WASTE TYPE",  "PICK UP SCHEDULE",  "LOCAL CONTACT", "INTERNAL COST",  "PRICE"]
+	string="%10s|%10s|%10s|%10s|%10s|%10s|%10s|%10s"%(values[0].ljust(20), values[1].ljust(20), values[2].ljust(20), values[3].ljust(20), values[4].ljust(40), values[5].ljust(20), values[6].ljust(20), values[7].ljust(20))
+	print(string)
+	print("--"*80)
+
+	service_no_list=[]
+	for value in rows:
+		value=list(value)
+		service_no_list.append(value[0])
+		formatted_string="%10s|%10s|%10s|%10s|%10s|%10s|%-20.2f|%.2f"%(value[0].ljust(20), value[1].ljust(20), value[2].ljust(20), value[3].ljust(20), value[4].ljust(40), value[5].ljust(20), value[6], value[7])
+		print(formatted_string)
+		print()
+
+	# Get the service_no and validate its correct
+	while True:
+		service_no=input("SELECT THE SERVICE AGREEMENT: ")
+		if(service_no not in service_no_list):
+			continue
+		else:
+			break
+
+	# Return the service no choosen from the dispatcher
+	return service_no
+
+
+
+
+# Select the driver to fulfill a task
+def Dispatcher_getDriver():
+	global connection, cursor
+	# Select all the drivers
+	cursor.execute('''
+		select distinct p.pid, p.name
+		from drivers d, personnel p
+		where p.pid= d.pid 
+		''')
+	connection.commit()
+
+	# Dispatcher can choose from it
+	rows=cursor.fetchall()
+	print()
+	print("SELECT ONE DRIVER FROM THE FOLLOWING DRIVERS: ")
+	print("DRIVER ID \t     DRIVER NAME")
+	print("---"*20)
+
+	drivers_list=[]
+	for value in rows:
+		value=list(value)
+		drivers_list.append(value[0])
+		print("%s %s" %(value[0].ljust(20), value[1]))
+
+	# Get the driver and validate its correct
+	while True:
+		driver=input("ENTER DRIVER ID: ")
+		if(driver not in drivers_list):
+			continue
+		else:
+			break
+	return driver
+
+
+
+# QUESTION 1
+# If a driver is selected who owns a truck, that truck should be automatically selected; 
+# otherwise the dispatcher also must select a truck.
+def Dispatcher_getTruck(driver):
+	global connection, cursor
+
+	# SEARCH TO SEE IF THE DRIVER HAS A TRUCK OR NOT
+	cursor.execute('''
+		select distinct owned_truck_id
+		from drivers 
+		where pid=?''', (driver,))
+	connection.commit()
+	num=cursor.fetchone()[0]
+
+	# IF the driver has no trucks then do the following
+	if(num==None):
+		
+		# Get the Trucks Not owned by the company
+		cursor.execute('''
+			select distinct truck_id, model
+			from trucks
+			group by truck_id
+			
+			EXCEPT 
+
+			SELECT t.truck_id, t.model
+			FROM trucks t, drivers d
+			WHERE d.owned_truck_id=t.truck_id
+			GROUP BY t.truck_id''')
+
+		connection.commit()
+		trucks=cursor.fetchall()
+			
+		print()
+		print("SELECT A TRUCK FROM THE FOLLOWING TRUCKS: ")
+		print("TRUCK ID \t     MODEL")
+		print("---"*20)
+
+		truck_list=[]
+		for value in trucks:
+			value=list(value)
+			truck_list.append(value[0])
+			print("%s %s" %(value[0].ljust(20), value[1]))
+
+
+		# Get the truck and validate its correct
+		while True:
+			truck=input("ENTER TRUCK ID: ")
+			if(truck not in truck_list):
+				continue
+			else:
+				break
 
 	else:
-		drivers()
+		# GET THE TRUCK
+		truck= num
+	
+	return truck
+
+
+
+# QUESTION 2
+# Get the container that were picking up
+def Dispatcher_getPickUp(service_no):
+	global connection, cursor
+
+	#Query to get the location associated with the service no
+	cursor.execute('''
+		select distinct location
+		from service_agreements
+		where service_no=?''', (service_no,))
+	connection.commit()
+	loc=cursor.fetchone()[0]
+	
+	# Select only cointainer at the location of the service no
+	cursor.execute('''
+		SELECT c.container_id
+		FROM containers c
+		WHERE EXISTS (
+			SELECT *
+		    FROM service_fulfillments s, service_agreements sa
+			WHERE s.cid_drop_off = c.container_id
+		   	AND sa.master_account=s.master_account
+		    AND sa.location=?
+		    ORDER BY s.date_time desc limit 2)''', (loc,))
+	connection.commit()
+	
+	# Get the container thats gonna be picked up
+	# DO checks
+	container=cursor.fetchall()
+	list_containers=[]
+	for i in container:
+		i=list(i)
+		for j in i:
+			list_containers.append(j)
+
+	if(len(list_containers)==0 or len(list_containers)==1):
+		container= 'NULLID'
+	else:
+		container=list_containers[1]
+
+	# Return the container to be picked up 
+	return container
+
+
+
+# QUESTION 3
+# Get the container that were dropping off
+def Dispatcher_getDropOff(service_no):
+	global connection, cursor
+
+	#Query to get the waste type associated with the service no
+	cursor.execute('''
+		select distinct waste_type
+		from service_agreements
+		where service_no=?''', (service_no,))
+	connection.commit()
+	waste_type=cursor.fetchone()[0]
+
+
+	# Select all containers that are available and hold the appropriate waste type, given in the service agreement.
+	cursor.execute('''
+			SELECT c.container_id
+			FROM container_waste_types c
+			WHERE NOT EXISTS (SELECT *
+			                  FROM service_fulfillments s
+			                  WHERE s.cid_drop_off = c.container_id)
+			AND c.waste_type=?
+			UNION
+			SELECT c.container_id
+			FROM containers c
+			WHERE (SELECT MAX(date_time) FROM service_fulfillments s WHERE s.cid_pick_up = c.container_id)
+			       >
+			      (SELECT MAX(date_time) FROM service_fulfillments s WHERE s.cid_drop_off = c.container_id)''', (waste_type,))
+	
+	connection.commit()
+	rows=cursor.fetchall()
+
+	# Display the containers to the dispatcher
+	print()
+	print("SELECT ONE CONTAINER FROM THE FOLLOWING CONTAINERS: ")
+	print("CONTAINER ID ")
+	print("--"*10)
+
+	container_list=[]
+	for value in rows:
+		value=list(value)
+		container_list.append(value[0])
+		print("%s" %(value[0].ljust(20)))
+
+	# Get the container and validate its correct
+	while True:
+		container=input("ENTER CONTAINER ID: ")
+		if(container not in container_list):
+			continue
+		else:
+			break
+
+	# Return the container being dropped off
+	return container
+
+
+
+# Question 4
+# Set the date for a particular entry
+def setDate():
+	date_array=[]
+
+
+	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
+	while True:
+
+		# GET THE YEAR
+		while True:
+			year=input("ENTER THE YEAR (FORMAT YYYY) : ")
+			if len(year)==4:
+				date_array.insert(0,year)
+				break
+			else:
+				continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+		while True:
+			month=input("ENTER MONTH (FORMAT MM) : ")
+			if month in month_list:
+				date_array.insert(1,month)
+				break
+			else:
+				continue
+		
+		# GET THE DAY
+		while True:
+			day= int(input("ENTER DATE (FORMAT DD) : "))
+			if day<=31 and day>0:
+				date_array.insert(2,str(day))
+				break
+			else:
+				continue
+
+
+		# Validate the date the user entered
+		date= datetime.datetime.strptime(date_array[0]+'-'+date_array[1]+'-'+date_array[2], '%Y-%m-%d')
+		
+
+		print(date)
+		print(datetime.datetime.now())
+		if(datetime.datetime.now()<date):
+			break
+		else:
+			print("TRY AGAIN (DATE HAS PASSED, ", end=" ")
+			continue
+		
+	# return the date
+	return date
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 
 
 
 # Logs user out of the system
-def LogOut():
+def Log_out():
 	global connection, cursor, logout
 
 	logout=False
 	return logout
 
-
-
 # Function find_role returns the role associated to that particular username
 def find_role(username):
+	global connection, cursor
+
 	t1= (username,)
 	cursor.execute('''
 		select role 
 		from users
 		where login=?''', t1)
+<<<<<<< HEAD
 	role = cursor.fetchone()
-	# Return the role of the user
-	return role
+=======
+	role= cursor.fetchone()
+	connection.commit()
 
+>>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
+	# Return the role of the user
+	return role[0]
+
+
+# Depending on the role, GateKeeper for that tasks asociated to that role
+def role_GateKeeper(role):
+	global logout
+	while logout==False:
+		
+		if (role=="account manager"):
+			account_manager()
+
+		elif (role== "supervisor"):
+			supervisor()
+
+		elif (role== "dispatcher"):
+			dispatcher()
+
+		else:
+			driver()
 
 #Checks the database to authenticate what the user entered is correct
 def Authenticate(entered_pwd,username):
@@ -317,12 +808,50 @@ def login():
 			continue
 
 
+<<<<<<< HEAD
 		if status == True:
 			print"Welcome ",  username
 			role = find_role(username)
 			Role_GateKeeper(role)
 			break
 		
+=======
+#Checks the database to authenticate what the user entered is correct
+def Authenticate(username, entered_pwd):
+	global connection, cursor
+
+	# Hashed it using code given
+	dk= (encrypt(entered_pwd),)
+
+	#Get user password from database 
+	t1= (username,)
+	cursor.execute('''
+		select password 
+		from users
+		where login=?''', t1)
+
+	database_pwd= cursor.fetchone()
+	database_pwd=database_pwd
+	connection.commit()
+
+	# Check if password exists
+	if (dk==database_pwd):
+		return True
+
+	else:
+		return False
+
+
+# Encrypt the Password
+def encrypt(entered_pwd):
+	hash_name = 'sha256'
+	salt = 'ssdirf993lksiqb4'
+	iterations = 100000
+	dk = pbkdf2_hmac(hash_name, bytearray(entered_pwd, 'ascii'), bytearray(salt, 'ascii'), iterations)
+	return dk
+
+
+>>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
 
 def main():
 	global connection, cursor, logout
@@ -333,6 +862,7 @@ def main():
 	cursor= connection.cursor()
 	# Call to the Create Table Function
 	create_tables()
+<<<<<<< HEAD
 	# Call to populate the tables
 	insert_data()
 
@@ -347,6 +877,45 @@ def main():
 
 
 
+=======
+	add_data()
+
+	# Loop to login to the system 
+	while (logout==False):
+
+		# Get username from user
+		print()
+		username = input('ENTER USERNAME OR ENTER q TO EXIT: ')
+		# Check to see if user enetered q to quit
+		if (username=="q" or username=="Q"):
+			break
+
+		else: 
+			# get password from password
+			pwd = input('ENTER PASSWORD OR ENTER q TO EXIT: ')
+			# Check to see if user enetered q to quit
+			if (pwd=="q" or pwd=="Q"):
+				break
+		
+			# Call to authenticate the user
+			status=Authenticate(username, pwd)
+
+			# If login successful find a role
+			if status==True:
+				role= find_role(username)
+				role_GateKeeper(role)
+
+			# Else Login is not successful, loop back to login 
+			else:
+				print("Username and password do not Match")
+				print()
+				print()
+				continue	
+
+	print()
+	print("GoodBye")
+	print("\n"*80)
+>>>>>>> 5310c59308edfe17135b57bb8b3a8d70cbd5b9e8
 main()
 	
 
