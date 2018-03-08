@@ -654,22 +654,22 @@ def find_role(username):
 # Depending on the role, GateKeeper for that tasks asociated to that role
 def Role_GateKeeper(role):
 	global logout
-	while logout==False:
-		if (role=="account manager"):
-			account_manager()
-			break
+	#while logout==False:
+	if (role=="account manager"):
+		account_manager()
+		
 			
-		elif (role== "supervisor"):
-			supervisor()
-			break
+	elif (role== "supervisor"):
+		supervisor()
+
 			
-		elif (role== "dispatcher"):
-			dispatcher()
-			break
+	elif (role== "dispatcher"):
+		dispatcher()
+
 			
-		else:
-			driver()
-			break
+	else:
+		driver()
+			
 			
 
 
