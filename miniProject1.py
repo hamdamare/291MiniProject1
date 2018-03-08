@@ -713,19 +713,19 @@ def login():
 		username = raw_input("Please enter your username: ")
 		# Check to see if user enetered q to quit
 		if (username=="q" or username=="Q"):
-			print 'GoodBye'
+			print ('GoodBye')
 			break
 		
 		#get password
 		psw = raw_input("Please enter your password: ")
-		print '\n'
-		print 'Authenticating............'
+		print ('\n')
+		print ('Authenticating............')
 		time.sleep(0.3)
 		
 
 		# Check to see if user enetered q to quit
 		if (psw=="q" or psw=="Q"):
-			print 'GoodBye'
+			print('GoodBye')
 			break
 
 		#If hashed password is the same as the hashed database password then login is successful
@@ -733,11 +733,10 @@ def login():
 		# If Login is not successful, loop back to login
 		if not status:
 			print("\nUsername and password Do Not Match")
-			print
 			continue
 		#if the user successfully logged in we find its roles
 		if status:
-			print "\nWelcome",username
+			print ("\nWelcome",username)
 			login = True
 			role = find_role(username)
 			Role_GateKeeper(role)
@@ -756,8 +755,8 @@ def main():
 	add_data()
 	login()
 	if LogOut == True:
-		print
-		print	
+		print()
+		print()
 		print("GoodBye")
 	
 
