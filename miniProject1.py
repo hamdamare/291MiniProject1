@@ -708,7 +708,6 @@ def login():
 		#if user has logged out we dont have to login
 		if logout == True:
 			break
-		print'\n'
 
 		#get username
 		username = raw_input("Please enter your username: ")
