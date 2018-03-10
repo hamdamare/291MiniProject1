@@ -36,14 +36,14 @@ def add_data():
 		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
 
 		--Users 
-		INSERT INTO users VALUES('34725','Account manager','Dan','pass1');
-		INSERT INTO users VALUES('42134','Account manager','Charlotte','pass2');
-		INSERT INTO users VALUES('16830','Account manager','Grady','pass3');
-		INSERT INTO users VALUES('73709','Account manager','Carina','pass4');
-		INSERT INTO users VALUES('15625','Account manager','Cameron','pass5');
-		INSERT INTO users VALUES('56468','Account manager','Roderick','pass6');
-		INSERT INTO users VALUES('81480','Account manager','Katrina','pass7');
-		INSERT INTO users VALUES('48660','Account manager','Jeremy','pass8');
+		INSERT INTO users VALUES('34725','dispatcher','Dan','pass1');
+		INSERT INTO users VALUES('42134','account manager','Charlotte','pass2');
+		INSERT INTO users VALUES('16830','account manager','Grady','pass3');
+		INSERT INTO users VALUES('73709','account manager','Carina','pass4');
+		INSERT INTO users VALUES('15625','account manager','Cameron','pass5');
+		INSERT INTO users VALUES('56468','account manager','Roderick','pass6');
+		INSERT INTO users VALUES('81480','account manager','Katrina','pass7');
+		INSERT INTO users VALUES('48660','account manager','Jeremy','pass8');
 
 		--Accounts
 		INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
@@ -587,45 +587,43 @@ def Dispatcher_getDropOff(service_no):
 # Question 4
 # Set the date for a particular entry
 def setDate():
-	date_array=[]
-	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
+	date_list=[]
 	while True:
-		# GET THE YEAR
+
 		while True:
-			year=input("ENTER THE YEAR (FORMAT YYYY) : ")
+			date= input("ENTER DATE (FORMAT YYYY-MM-DD): ")
+			# GET THE YEAR
+			date_list= date.split("-")  
+			year=date_list[0]
 			if len(year)==4:
-				date_array.insert(0,year)
 				break
 			else:
 				continue
 
-		# GET THE MONTH
-		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
-		while True:
-			month=input("ENTER MONTH (FORMAT MM) : ")
+			# GET THE MONTH
+			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+			month=date_list[1]
 			if month in month_list:
-				date_array.insert(1,month)
 				break
 			else:
 				continue
 		
-		# GET THE DAY
-		while True:
-			day= int(input("ENTER DATE (FORMAT DD) : "))
+			# GET THE DAY
+			day=date_list[2]
 			if day<=31 and day>0:
-				date_array.insert(2,str(day))
 				break
 			else:
 				continue
+
 		# Validate the date the user entered
-		date= datetime.datetime.strptime(date_array[0]+'-'+date_array[1]+'-'+date_array[2], '%Y-%m-%d')
-		print(date)
-		print(datetime.datetime.now())
+		date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+
 		if(datetime.datetime.now()<date):
 			break
 		else:
-			#print("TRY AGAIN (DATE HAS PASSED, ", end=" ")
+			print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
 			continue
+
 	# return the date
 	return date
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -644,11 +642,11 @@ def find_role(username):
 
 	t1= (username,)
 	cursor.execute('SELECT role FROM users WHERE login=?', t1)
-	role = cursor.fetchall()
+	role = cursor.fetchone()[0]
 	connection.commit()
 	# Return the role of the user
-	return role[0]
-	print(role)
+	return role
+	
 
 
 # Depending on the role, GateKeeper for that tasks asociated to that role
@@ -710,14 +708,14 @@ def login():
 			break
 
 		#get username
-		username = raw_input("Please enter your username: ")
+		username = input("Please enter your username: ")
 		# Check to see if user enetered q to quit
 		if (username=="q" or username=="Q"):
 			print ('GoodBye')
 			break
 		
 		#get password
-		psw = raw_input("Please enter your password: ")
+		psw = input("Please enter your password: ")
 		print ('\n')
 		print ('Authenticating............')
 		time.sleep(0.3)
