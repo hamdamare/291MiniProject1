@@ -33,11 +33,11 @@ def add_data():
 		INSERT INTO trucks VALUES('2333','Cadillac Escalade EXT','front loader');
 		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
 
-<<<<<<< HEAD
+
 		INSERT INTO account_managers VALUES('34725','small accounts manager','8th Street South');
 		INSERT INTO account_managers VALUES('42134','major accounts manager','Main Street West');
 
-=======
+
 		--Users 
 		INSERT INTO users VALUES('34725','dispatcher','Dan','pass1');
 		INSERT INTO users VALUES('42134','account manager','Charlotte','pass2');
@@ -47,7 +47,7 @@ def add_data():
 		INSERT INTO users VALUES('56468','account manager','Roderick','pass6');
 		INSERT INTO users VALUES('81480','account manager','Katrina','pass7');
 		INSERT INTO users VALUES('48660','account manager','Jeremy','pass8');
->>>>>>> 8275919940bfd9e303eb7d6d036f2580a25d6a26
+
 
 		--Accounts
 		INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
