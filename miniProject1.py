@@ -21,8 +21,6 @@ def add_data():
 
 
 	cursor.executescript(
-
-
 		'''	
 		INSERT INTO trucks VALUES('1111','Ford F-Series','roll-off');
 		INSERT INTO trucks VALUES('1222','Honda Ridgeline','garbage bin collector');
@@ -35,15 +33,9 @@ def add_data():
 		INSERT INTO trucks VALUES('2333','Cadillac Escalade EXT','front loader');
 		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
 
-		--Users 
-		INSERT INTO users VALUES('34725','Account manager','Dan','pass1');
-		INSERT INTO users VALUES('42134','Account manager','Charlotte','pass2');
-		INSERT INTO users VALUES('16830','Account manager','Grady','pass3');
-		INSERT INTO users VALUES('73709','Account manager','Carina','pass4');
-		INSERT INTO users VALUES('15625','Account manager','Cameron','pass5');
-		INSERT INTO users VALUES('56468','Account manager','Roderick','pass6');
-		INSERT INTO users VALUES('81480','Account manager','Katrina','pass7');
-		INSERT INTO users VALUES('48660','Account manager','Jeremy','pass8');
+		INSERT INTO account_managers VALUES('34725','small accounts manager','8th Street South');
+		INSERT INTO account_managers VALUES('42134','major accounts manager','Main Street West');
+
 
 		--Accounts
 		INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
@@ -126,7 +118,7 @@ def add_data():
 		INSERT INTO personnel VALUES('12222','Ayub Ahmed','mjewell@optonline.net','Maple Avenue','52284');
 			
 		--drivers who do not own a truck
-		INSERT INTO personnel VALUES('13333','Hamda Mare','panolex@sbcglobal.net','Hillcrest Avenue','37764');
+		INSERT INTO personnel VALUES('1','Hamda Mare','panolex@sbcglobal.net','Hillcrest Avenue','37764');
 
 		--drivers who own a truck
 		INSERT INTO drivers VALUES('12222','Single Trailer','2111');
@@ -279,16 +271,267 @@ def create_tables():
 	cursor.execute(' PRAGMA forteign_keys=ON; ')
 	connection.commit()
 
-
-def supervisors():
-	pass
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------ACCOUNT MANAGER Functonality----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def account_manager():
-	pass
+def account_managerQ1(username):
+global connection, cursor
+# We select the customer information of all the customers that the user manages
+#then we run our query which outputs the customer information that this manager manages
+
+SELECT 
+t1= (username)
+cursor.execute('''
+		SELECT a.customer_name, a.contact_info,a.customer_type,s.service_no,s.master_account, s.location,s.waste_type,s.pick_up_schedule,s.local_contact,s.internal_cost,s.price 
+		FROM accounts a, service_agreements s, account_managers m, personnel p 
+		WHERE p.name=? AND p.pid = m.pid AND m.pid = a.account_mgr AND s.master_account = a.account_no ORDER BY s.service_no''', (t1,))
+customer_info = cursor.fetchall()
+print(customer_info)
+
+
+
+
+#Q2- user adds a new customer account to the database
+def account_managerQ2(username):
+	global connection, cursor
+	#Create a new master account with all the required information. The manager of the account should be automatically set to the id of the account manager who is creating the account.
+	#first we select the id of the account manager with the manager name equal to the login name
+	t1 = (username,)
+	cursor.execute('SELECT  m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?', (t1))
+	info = cursor.fetchall()
+	for i in info:
+		for x in i:
+			#we now have the manager id
+			mid = (x,)
+			#grab new customer information from user 
+			account_no = raw_input('Enter an account number: ')
+			#make sure its len is 8 
+
+
+			start_date = raw_input('Enter a start_date: ')
+			#copy hamses date check
+			end_date = raw_input('Enter an end-date: ')
+			#copy hamses date check
+			
+			customer_name = raw_input('Enter a customer_name: ')
+			#make sure customer name is not null
+			customer_type = raw_input('Enter a customer_type: ')
+			#make sure customer type is one of the types that we have
+
+			contact_info = raw_input('Enter customer contact information (ex.000-000-0000): ')
+			#make sure format is correct
+
+			total_amount = raw_input('Enter a total amount: ')
+			#make sure len is greater than 0
+
+
+			# now create a new customer account with the manager id
+			cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(customer_type,),str(start_date,),str(end_date,),str(total_amount,)))
+			connection.commit()
+			time.sleep(0.2)
+			print('.....')
+			print('Created a new customer account!\n')
+
+
+			#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
+			print('Would you like to create a service agreement for this customer?')
+			create_sa = raw_input('Enter Y for Yes or N for No: ')
+			#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
+			if create_sa == 'N' or 'n':
+				print('\n Would you like to create a service agreement for any other customers?')
+				sa = raw_input('Enter Y for Yes or N for No: ')
+				#if yes we add a service agreement to the another customer 
+				if sa == 'Y' or 'y':
+					account_managerQ3(username);
+
+
+
+
+			#if user chooses to create a service agreement for the newly added customer
+			elif create_sa == 'Y' or 'y':
+				#select all the service numbers that we have 
+				location = raw_input('Enter a location: ')
+				waste_type = raw_input('Enter a waste_type: ')
+				pick_up_schedule = raw_input('Enter a pick up schedule: ')
+				local_contact = raw_input('Enter a local contact: ')
+				internal_cost = raw_input('Enter the internal cost: ')
+				price = raw_input('Enter a price: ')
+				master_account = account_no
+
+				#check if inputed customer info is valid 
+				#randomly select a service number 
+				service_no = random.randint(0,100)
+				cursor.execute('SELECT service_no FROM service_agreements')
+				badSA = cursor.fetchall()
+				#if randomly selected service number is in use randomly select another one 
+				for i in badSA:
+					while (i == service_no):
+						service_no = random.randint(0,100)
+						return service_no
+
+				if valid_Q3:
+					cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
+					print('\nservice agreement created!')
+
+
+
+
+
+#Q3-if user decides to create a service agreement for a customer that already exists 
+def account_managerQ3(username):
+	#First we get the manager id for the account manager
+	t1 = (username,)
+	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
+	#grab the list of manager pid 
+	info = cursor.fetchall()
+	i=(info[0])
+	mid = i[0]
+	#print all the custoemers an account manaager manages
+	print("\nThese are all the customers you manage:")
+	cursor.execute('SELECT a.customer_name  FROM accounts a WHERE a.account_mgr = ?', (mid,))
+	customer_names = cursor.fetchall()
+	print(customer_names[0][0])
+
+
+	#then we get the customer who the account manager wants to make a service agreeement for
+	customer_name = raw_input('\nWhat is the name of the customer you want to create a service agreement for?: ')
+	if customer_names[0][0] == customer_name:
+
+		print(customer_names[0][0])
+
+		cursor.execute('SELECT a.account_no,a.account_mgr FROM accounts a, account_managers m WHERE a.customer_name = ?',((customer_name,)))
+		account_num = cursor.fetchall()
+		a_mgr = account_num[0][1]
+		a_no = account_num[0][0]
+
+
+		#if account manager selects a cusotmer that they do not manage we exit
+		#then we print the customer names fro the user to select from 
+		if a_mgr != mid:
+			print('Sorry you do not manage this customer')
+		
+		#account manager selects a customer they manage and we grab service agreement information
+		else:
+		#randomly select a service number 
+			service_no = random.randint(0,100)
+			cursor.execute('SELECT service_no FROM service_agreements')
+			badSA = cursor.fetchall()
+			#if randomly selected service number is in use randomly select another one 
+			for i in badSA:
+				if i[:] == service_no:
+					print(i)
+					service_no.random.randint(0,100)
+					print(service_no)
+				
+				else:
+				#prompt user to enter values for a service agreement 
+					location = raw_input('Enter a location: ')
+					waste_type = raw_input('Enter a waste_type: ')
+					pick_up_schedule = raw_input('Enter a pick up schedule: ')
+					local_contact = raw_input('Enter a local contact: ')
+					internal_cost = raw_input('Enter the internal cost: ')
+					price = raw_input('Enter a price: ')
+
+					#if the information is valid then we create a service agreement account for this customer
+					valid_Q3(location, waste_type, pick_up_schedule,local_contact, internal_cost,price)
+					
+					#if user inputted information is correctly inputted then we create a new service agreement for the customer
+					if valid_Q3 and i != service_no:
+						cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(a_no,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
+						print('\nService agreement created!')
+						break
+
+
+
+
+#Q4 prints the summary for a single  customer					
+def account_managerQ4(username):
+	#first we select the manager id 
+	t1 = (username,)
+	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
+	
+	#grab the list of manager pid 
+	info = cursor.fetchall()
+	i=(info[0])
+	mid = i[0]
+
+	#Then we grab the customer information
+	print("These are all the customers you manage\n")
+	cursor.execute('SELECT a.customer_name  FROM accounts a WHERE a.account_mgr = ?', (mid,))
+	customer_names = cursor.fetchall()
+	for i in customer_names:
+		print i[0]
+
+
+	#as user to enter customer name
+	customer_name = raw_input('\nWhat is the name of the customer who you want to see a summary report for?: ')
+
+	#if customer name matches with the customer names that the user manages
+	print(customer_names[0][0])
+	if str(customer_names[0][0]) == customer_name:
+		#select the count of services, sum of internal cost, sum of prices, and the count of the different waste types
+		cursor.execute('SELECT COUNT(s.service_no), SUM(s.internal_cost),SUM(s.price), FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ?' ,((customer_name,)))
+		connection.commit()
+		summary = cursor.fetchall()
+		#print the summary for the user
+		cursor.execute('SELECT COUNT(*)  FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ? GROUP BY s.waste_type' ,((customer_name,)))
+		cursor.commit()
+		waste_types = cursor.fetchall()
+		distinct_types = len(waste_types)
+
+		for i in summary:
+			i = newsummary
+		print(distinct_types)
+
+
+
+	#if user inputs a customer name that does not match with the customers they manage, add this to the top as a while loop
+	#condition, user must manage this account 
+	else:
+		print('Sorry you do not manage this customer')
+		
+
+
+
+
+# linkes account managers to the many options account managers have
+#add the enter q to logout statement
+def account_manager(username):
+	global connection, cursor
+	print()
+	print("-------------------------------------------------------------")
+	print("ACCOUNT MANAGER PAGE:")
+	print("-------------------------------------------------------------")
+	print() 'Welcome Account Manager'
+	print
+	logout = input('Enter q to exit')
+	if logout == q:
+		logout()
+
+	else:
+		print('What would you like to do?')
+		options = raw_input(' Enter 1 to view the customer information of all customers that you manage:\n Enter 2 to create a new customer account:\n Enter 3 to create a new service agreement for an existing customer:\n Enter 4 to view a customers summary: ')
+
+		while True:
+			if options =='1':
+				account_managerQ1(username)
+				break
+
+			elif options == '2':
+				account_managerQ2(username)
+				break
+
+			elif options == '3':
+				account_managerQ3(username)
+				break
+
+			elif options == '4':
+				account_managerQ4(username)
+				break
+
+
+	
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------SUPERVISOR FUNCTIONALIT----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -308,6 +551,7 @@ def driver():
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------DISPATCHER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 def dispatcher():
 	global connection, cursor
@@ -589,11 +833,16 @@ def Dispatcher_getDropOff(service_no):
 def setDate():
 	date_array=[]
 	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
+
 	while True:
 		# GET THE YEAR
 		while True:
 			year=input("ENTER THE YEAR (FORMAT YYYY) : ")
-			if len(year)==4:
+
+			if (year=="q" or year=="Q"):
+				logout()
+
+			elif len(year)==4:
 				date_array.insert(0,year)
 				break
 			else:
@@ -632,11 +881,7 @@ def setDate():
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Logs user out of the system
-def LogOut():
-	global connection, cursor, logout
-	logout=False
-	return logout
+
 
 # Function find_role returns the role associated to that particular username
 def find_role(username):
@@ -644,23 +889,20 @@ def find_role(username):
 
 	t1= (username,)
 	cursor.execute('SELECT role FROM users WHERE login=?', t1)
-	role = cursor.fetchall()
+	role = cursor.fetchone()
 	connection.commit()
 	# Return the role of the user
 	return role[0]
-	print(role)
 
 
 # Depending on the role, GateKeeper for that tasks asociated to that role
-def Role_GateKeeper(role):
-	global logout
-	#while logout==False:
+def Role_GateKeeper(role, username):
 	if (role=="account manager"):
-		account_manager()
+		account_manager(username)
 		
 			
 	elif (role== "supervisor"):
-		supervisor()
+		supervisor(username)
 
 			
 	elif (role== "dispatcher"):
@@ -668,7 +910,7 @@ def Role_GateKeeper(role):
 
 			
 	else:
-		driver()
+		driver(username)
 			
 			
 
@@ -676,6 +918,7 @@ def Role_GateKeeper(role):
 #Checks the database to authenticate what the user entered is correct
 def Authenticate(entered_pwd,username):
 	global connection, cursor
+
 	status = False
 	# Hashed it using code given
 	hash_name = 'sha256'
@@ -685,44 +928,179 @@ def Authenticate(entered_pwd,username):
 	t1=(username,)
 	#Selects the password from the table associated to the user
 	cursor.execute('SELECT password FROM users WHERE login==?',t1)
+	connection.commit()
 	rows = cursor.fetchall()
+
 	#If hashed password is the same as the hashed database password then login is successful
-	for row in rows:
-		db_pass = row[0]
-		dk = pbkdf2_hmac(hash_name, bytearray(entered_pwd, 'ascii'), bytearray(salt, 'ascii'), iterations)
-		dk2 =pbkdf2_hmac(hash_name, bytearray(db_pass, 'ascii'), bytearray(salt, 'ascii'), iterations)
-		if dk == dk2:
-			status = True	
+	print(entered_pwd)
+	print(rows)
+	if(rows!=[]):
+		for row in rows:
+			print(row)
+			print(row[0])
+			dk=row[0]
+			dk2 = encrypt_password(entered_pwd)
+			if dk == dk2:
+				status = True	
 	return status
 
+
+
+#assume user is not in the users table
+def encrypt_password(password):
+	global connection, cursor
+	status = False
+	# Hashed it using code given
+	hash_name = 'sha256'
+	salt = 'ssdirf993lksiqb4'
+	iterations = 100000
+	dk =pbkdf2_hmac(hash_name, bytearray(password, 'ascii'), bytearray(salt, 'ascii'), iterations)
+
+	return dk
+
+
+
+def create_account():
+	global cursor, connection
+
+	print()
+	print()
+	print("-------------------------------------------------------------")
+	print("CREATE ACCOUNT PAGE:")
+	print("-------------------------------------------------------------")
+	print('Enter q to exit')
+	#PID
+	#Make sure that pid is in personnel
+	while True:
+		pid = input('Please enter your personnel identification number: ')	
+		if (pid=="q" or pid=="Q"):
+			logout()
+		cursor.execute('''
+			select *
+			from personnel
+			where pid=?''', (pid,))
+		row=cursor.fetchall
+		if row==[]:
+			continue
+		else:
+			break
+
+	#USERNAME
+	#Make sure the username is unique
+	while True:
+		username = input('Please enter a username to Login: ')
+		if (pid=="q" or pid=="Q"):
+			logout()
+		cursor.execute('''
+			select *
+			from users
+			where login=?''', (username,))
+		row=cursor.fetchall()
+
+		if row!=[]:
+			continue
+		else:
+			break
+
+	
+
+	#PASSWORD
+	password = input('Please enter a password to Login: ')
+	encrypt_pass = encrypt_password(password)
+
+	#ROLE
+	role=get_role(pid)
+
+	t=(pid,role,username,encrypt_pass)
+	
+	#insert user information into the users table
+	cursor.execute('INSERT INTO users VALUES(?,?,?,?)',t)
+	connection.commit()
+	# Call to login
+	print()
+	print()
+	login()
+
+
+def get_role(pid):
+	global cursor, connection
+	#case1: Account Manager Table
+	cursor.execute('''
+		SELECT *
+		FROM personnel p, account_managers a
+		WHERE p.pid=a.pid
+		AND p.pid=?''', (pid,))
+	connection.commit()
+	acccount_manager_table=cursor.fetchall()
+
+
+	#case2: Driver Table
+	cursor.execute('''
+		SELECT *
+		FROM personnel p, drivers d
+		WHERE p.pid=d.pid
+		AND p.pid=?''', (pid,))
+	connection.commit()
+	driver_table=cursor.fetchall()
+
+	#case3: Supervisor
+	cursor.execute('''
+		SELECT *
+		FROM personnel p
+		WHERE p.supervisor_pid=?''', (pid,))
+	connection.commit()
+	supervisor_table=cursor.fetchall()
+
+	print(acccount_manager_table) 
+	print(driver_table)
+	print(supervisor_table)
+
+	#case1
+	if acccount_manager_table!=[]:
+		role="account manager"
+	#case2
+	elif driver_table!=[]:
+		role="driver"
+	#case3
+	elif supervisor_table!=[]:
+		role="supervisor"
+	#case4
+	else:
+		role="dispatcher"
+
+	return role
 
 
 
 #Allows user to log in succesfully with previous username and previous password
 def login():
-	global cursor, connection
-	#logout is whether or not user has logged out
-	login = False
-	#user must not have logged in yet to login
-	while not login:
+	print()
+	print()
+	print("-------------------------------------------------------------")
+	print("LOGIN PAGE:")
+	print("-------------------------------------------------------------")
+	count=0
+
+	while count<3:
+		print("ATTEMPTS REMAINING: %d" % (3-count) )
 		#if user has logged out we dont have to login
 		if logout == True:
 			break
 
 		#get username
-		username = raw_input("Please enter your username: ")
+
+		username = input("Please enter your username: ")
 		# Check to see if user enetered q to quit
 		if (username=="q" or username=="Q"):
 			print ('GoodBye')
 			break
 		
 		#get password
-		psw = raw_input("Please enter your password: ")
+		psw = input("Please enter your password: ")
 		print ('\n')
 		print ('Authenticating............')
 		time.sleep(0.3)
 		
-
 		# Check to see if user enetered q to quit
 		if (psw=="q" or psw=="Q"):
 			print('GoodBye')
@@ -732,18 +1110,33 @@ def login():
 		status = Authenticate(psw,username)
 		# If Login is not successful, loop back to login
 		if not status:
-			print("\nUsername and password Do Not Match")
-			continue
+			print("\nUsername and Password do not match")
+			count=count+1
 		#if the user successfully logged in we find its roles
 		if status:
-			print ("\nWelcome",username)
-			login = True
-			role = find_role(username)
-			Role_GateKeeper(role)
+			start(username)
+
+
+def logout():
+	print()
+	print("Goodbye!")
+	exit(0)
+
+
+
+def start(username):
+	print()
+	while True:
+		print('Enter q to exit when Prompted to enter data!!!')
+		role = find_role(username)
+		print(role)
+		Role_GateKeeper(role, username)
+
+
 
 
 def main():
-	global connection, cursor, logout
+	global connection, cursor
 
 	# Initialized the path to the database
 	connection= sqlite3.connect("./waste_management.db")
@@ -753,13 +1146,20 @@ def main():
 	create_tables()
 	# Loop to login to the system 
 	add_data()
-	login()
-	if LogOut == True:
-		print()
-		print()
-		print("GoodBye")
-	
 
+
+	decision= input('PRESS L TO LOGIN IN, OR PRESS C TO CREATE AN ACCOUNT: ')
+	
+	if decision == 'C' or decision== 'c':
+			create_account()
+	
+	elif decision == 'L' or  decision=='l':
+		login()
+
+	print()
+	print()
+	print("GoodBye")
+	
 main()
 	
 
