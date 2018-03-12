@@ -13,11 +13,10 @@ cursor = None
 logout=False
 
 
+
 # ADD DATA TO THE TABLE
 def add_data():
 	global connection, cursor
-
-
 
 
 	cursor.executescript(
@@ -496,8 +495,6 @@ def account_managerQ4(username):
 			i = newsummary
 		print(distinct_types)
 
-
-
 	#if user inputs a customer name that does not match with the customers they manage, add this to the top as a while loop
 	#condition, user must manage this account 
 	else:
@@ -557,7 +554,95 @@ def supervisor():
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def driver():
-	pass
+	global connection, cursor
+
+	#Get the start date
+	while True:
+		start_date= input("ENTER START DATE (FORMAT YYYY-MM-DD): ")
+		# GET THE YEAR
+		date_list= start_date.split("-")  
+		year=date_list[0]
+		if len(year)==4:
+
+			break
+		else:
+			continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+		month=date_list[1]
+		if month in month_list:
+			break
+		else:
+			continue
+	
+		# GET THE DAY
+		day=date_list[2]
+		if day<=31 and day>0:
+			break
+		else:
+			continue
+
+
+
+
+	#Get the end date
+	while True:
+		end_date= input("ENTER END DATE (FORMAT YYYY-MM-DD): ")
+		# GET THE YEAR
+		date_list= end_date.split("-")  
+		year=date_list[0]
+		if len(year)==4:
+			break
+		else:
+			continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+		month=date_list[1]
+		if month in month_list:
+			break
+		else:
+			continue
+	
+		# GET THE DAY
+		day=date_list[2]
+		if day<=31 and day>0:
+			break
+		else:
+			continue
+
+
+
+	t=(start_date, end_date)
+	cursor.execute('''
+		SELECT sa.location, sa.local_contact, sa.waste_type, s.cid_drop_off, s.cid_pick_up  
+		from service_agreements sa, service_fulfillments s
+		where sa.master_account=s.master_account
+		and s.service_no=sa.service_no
+		and s.date_time>=? 
+		and s.date_time=<?''', t)
+	connection.commit()
+	rows=cursor.fetchall()
+
+
+	# Display Tours formatted
+	print()
+	print()
+	print("INFORMATION ABOUT THE TOUR CONSISTS OF THE FOLLOWING: ")
+	values=["LOCATION", "LOCAL CONTACT", "WASTE TYPE", "DROP OFF CONTAINER ID ", "PICK UP CONTAINER ID"]
+	string="%10s|%10s|%10s|%10s|%10s"%(values[0].ljust(20), values[1].ljust(20), values[2].ljust(20), values[3].ljust(20), values[4].ljust(40))
+	print(string)
+	print("--"*80)
+	service_no_list=[]
+
+	for value in rows:
+		value=list(value)
+		service_no_list.append(value[0])
+		formatted_string="%10s|%10s|%10s|%10s|%10s" %(value[0].ljust(20), value[1].ljust(20), value[2].ljust(20), value[3].ljust(20), value[4].ljust(40))
+		print(formatted_string)
+		print()
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -575,6 +660,16 @@ def dispatcher():
 	
 	# Select a service no for a particular service agreement
 	service_no= Dispatcher_getService_no()
+
+	# find master account
+	cursor.execute('''
+		select s.master_account
+		from service agreements s
+		where s.service_no=?''', (service_no,))
+	connection.commit()
+	row= cursor.fetchone()
+
+	master_account=row[0]
 
 	# Select a driver
 	driver= Dispatcher_getDriver()
@@ -595,7 +690,7 @@ def dispatcher():
 	date=setDate()
 
 	#Create entries in the table service_fulfillments for upcoming days
-	add_service_fulliment(date, '2', service_no, truck, driver, cid_drop_off, cid_pick_up)
+	add_service_fulliment(date, master_account, service_no, truck, driver, cid_drop_off, cid_pick_up)
 
 
 
@@ -660,7 +755,6 @@ def Dispatcher_getDriver():
 		where p.pid= d.pid 
 		''')
 	connection.commit()
-
 	# Dispatcher can choose from it
 	rows=cursor.fetchall()
 	print()
@@ -778,7 +872,7 @@ def Dispatcher_getPickUp(service_no):
 			list_containers.append(j)
 
 	if(len(list_containers)==0 or len(list_containers)==1):
-		container= 'NULLID'
+		container= '0000'
 	else:
 		container=list_containers[1]
 
@@ -854,13 +948,6 @@ def setDate():
 
 		while True:
 
-			year=input("ENTER THE YEAR (FORMAT YYYY) : ")
-
-			if (year=="q" or year=="Q"):
-				logout()
-
-			elif len(year)==4:
-				date_array.insert(0,year)
 
 			date= input("ENTER DATE (FORMAT YYYY-MM-DD): ")
 			# GET THE YEAR
@@ -1159,7 +1246,6 @@ def start(username):
 		role = find_role(username)
 		print(role)
 		Role_GateKeeper(role, username)
-
 
 
 
