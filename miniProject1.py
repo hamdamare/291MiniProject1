@@ -1,4 +1,7 @@
+# WORK DONE BY AYUB AHMED, HAMDA MARE, AND HAMSE MARE
+
 # Citations
+
 
 # Import modules
 from hashlib import pbkdf2_hmac
@@ -10,134 +13,6 @@ import time
 # Global variables
 connection = None
 cursor = None
-logout=False
-
-
-
-# ADD DATA TO THE TABLE
-def add_data():
-	global connection, cursor
-
-
-	cursor.executescript(
-		'''	
-		INSERT INTO trucks VALUES('1111','Ford F-Series','roll-off');
-		INSERT INTO trucks VALUES('1222','Honda Ridgeline','garbage bin collector');
-		INSERT INTO trucks VALUES('1333','Cadillac Escalade EXT','front loader');
-		INSERT INTO trucks VALUES('1444','Chevrolet Colorado','garbage bin collector');
-
-		--trucks owned by drivers
-		INSERT INTO trucks VALUES('2111','Ford F-Series','roll-off');
-		INSERT INTO trucks VALUES('2222','Honda Ridgeline','garbage bin collector');
-		INSERT INTO trucks VALUES('2333','Cadillac Escalade EXT','front loader');
-		INSERT INTO trucks VALUES('2444','Chevrolet Colorado','garbage bin collector');
-
-
-		INSERT INTO account_managers VALUES('34725','small accounts manager','8th Street South');
-		INSERT INTO account_managers VALUES('42134','major accounts manager','Main Street West');
-
-
-		--Users 
-		INSERT INTO users VALUES('34725','dispatcher','Dan','pass1');
-		INSERT INTO users VALUES('42134','account manager','Charlotte','pass2');
-		INSERT INTO users VALUES('16830','account manager','Grady','pass3');
-		INSERT INTO users VALUES('73709','account manager','Carina','pass4');
-		INSERT INTO users VALUES('15625','account manager','Cameron','pass5');
-		INSERT INTO users VALUES('56468','account manager','Roderick','pass6');
-		INSERT INTO users VALUES('81480','account manager','Katrina','pass7');
-		INSERT INTO users VALUES('48660','account manager','Jeremy','pass8');
-
-
-		--Accounts
-		INSERT INTO accounts VALUES('87625036','34725','Rhianna Wilkinson','(201) 874-4399','residential','2006-05-19 13:16:14','2018-02-12 06:50:29',837646.52);
-		INSERT INTO accounts VALUES('73833854','42134','Reese Thornton','(745) 516-3060','commercial','2004-01-18 03:26:06','2013-02-09 15:56:27',893618.73);
-		INSERT INTO accounts VALUES('34910788','16830','Jarrett Castro','(883) 338-6912','commercial','2007-01-28 20:29:51','2019-11-06 10:14:50',658737.09);
-		INSERT INTO accounts VALUES('12029871','73709','Areli Lowery','(706) 692-2734','industrial','2000-08-03 20:48:36','2018-03-07 04:15:21',322370.9);
-		INSERT INTO accounts VALUES('85043375','15625','Lilyana Gaines','(425) 810-3987','municipal','2003-04-02 7:38:38','2016-02-10 21:45:17',111695.11);
-		INSERT INTO accounts VALUES('72149574','56468','Lila Sloan','(626) 284-7432','industrial','2002-11-15 12:31:42','2018-04-04 02:55:07',767403.0);
-		INSERT INTO accounts VALUES('23593363','34725','Alonzo Shea','(496) 102-3035','commercial','2006-07-25 10:39:12','2019-07-22 16:51:29',428144.53);
-
-
-		--Service agreements
-
-		INSERT INTO service_agreements VALUES('1','87625036','Elm Avenue','hazardous waste','every Tuesday of every week','(904) 694-9532',566.45,1994);
-		INSERT INTO service_agreements VALUES('2','73833854','Essex Court','mixed waste','every Wednesday of every week','(947) 900-1946',657.8,1643);
-		INSERT INTO service_agreements VALUES('3','34910788','Circle Drive','construction waste','every Monday of every week','(149) 953-8810',360.87,1225);
-		INSERT INTO service_agreements VALUES('4','12029871','Delaware Avenue','hazardous waste','every Friday of every week','(306) 162-4684',464.2,1609);
-		INSERT INTO service_agreements VALUES('5','85043375','Atlantic Avenue','metal','every Saturday of every week','(923) 798-0938',412.44,2601);
-
-		--Personnel
-		INSERT INTO personnel VALUES('34725','Dan','matloff@sbcglobal.net','Windsor Drive','55263');
-		INSERT INTO personnel VALUES('42134','Charlotte','mjewell@optonline.net','Maple Avenue','52284');
-		INSERT INTO personnel VALUES('16830','Grady','panolex@sbcglobal.net','Hillcrest Avenue','37764');
-		INSERT INTO personnel VALUES('73709','Carina','phyruxus@me.com','Schoolhouse Lane','74321');
-		INSERT INTO personnel VALUES('15625','Cameron','harryh@icloud.com','Cambridge Court','16391');
-
-
-		--maintenance_records of drivers owned trucks
-		INSERT INTO maintenance_records VALUES('2111','2011-08-30 19:19:46','Inspection');
-		INSERT INTO maintenance_records VALUES('2222','2011-08-23 19:19:46','repair');
-		INSERT INTO maintenance_records VALUES('2333','2011-08-13 19:19:46','Inspection');
-		INSERT INTO maintenance_records VALUES('2444','2011-08-03 19:19:46','repair');
-
-		--maintenance_records of company owned trucks
-		INSERT INTO maintenance_records VALUES('1111','2011-08-30 19:19:46','Inspection');
-		INSERT INTO maintenance_records VALUES('1222','2011-08-23 19:19:46','repair');
-		INSERT INTO maintenance_records VALUES('1333','2011-08-13 19:19:46','Inspection');
-		INSERT INTO maintenance_records VALUES('1444','2011-08-03 19:19:46','repair');
-
-
-		--Dummy containers
-		INSERT INTO containers VALUES('NULLID','Dummy Container','2015-03-10 20:42:44');
-
-		--real containers
-		INSERT INTO containers VALUES('1','Auger Compactor','2015-03-10 20:42:44');
-		INSERT INTO containers VALUES('2','Roll-Off dumpster','2009-10-24 02:53:48');
-		INSERT INTO containers VALUES('3','Closed-Topped','2016-12-10 06:14:33');
-		INSERT INTO containers VALUES('4','Open-Topped','2012-04-23 09:35:36');
-		INSERT INTO containers VALUES('5','Hydraulic Compactor','2015-03-10 20:42:44');
-		INSERT INTO containers VALUES('6','Roll-Off dumpster','2009-10-24 02:53:48');
-		INSERT INTO containers VALUES('7','Open-Topped','2016-12-10 06:14:33');
-		INSERT INTO containers VALUES('8','Closed-Topped','2012-04-23 09:35:36');
-		INSERT INTO containers VALUES('9','Auger Compactor','2016-12-10 06:14:33');
-		INSERT INTO containers VALUES('10','Hydraulic Compactor','2012-04-23 09:35:36');
-
-
-		INSERT INTO waste_types VALUES('plastic');
-		INSERT INTO waste_types VALUES('paper');
-		INSERT INTO waste_types VALUES('hazardous waste');
-		INSERT INTO waste_types VALUES('construction waste');
-		INSERT INTO waste_types VALUES('mixed waste');
-		INSERT INTO waste_types VALUES('metal');
-		INSERT INTO waste_types VALUES('compost');
-
-
-		INSERT INTO container_waste_types VALUES('1','mixed waste');
-		INSERT INTO container_waste_types VALUES('2','paper');
-		INSERT INTO container_waste_types VALUES('3','mixed waste');
-		INSERT INTO container_waste_types VALUES('4','construction waste');
-		INSERT INTO container_waste_types VALUES('5','hazardous waste');
-		INSERT INTO container_waste_types VALUES('6','compost');
-		INSERT INTO container_waste_types VALUES('7','construction waste');
-		INSERT INTO container_waste_types VALUES('8','hazardous waste');
-		INSERT INTO container_waste_types VALUES('9','plastic');
-		INSERT INTO container_waste_types VALUES('10','hazardous waste');
-
-
-
-		--information about drivers who own a truck
-		INSERT INTO personnel VALUES('12222','Ayub Ahmed','mjewell@optonline.net','Maple Avenue','52284');
-			
-		--drivers who do not own a truck
-		INSERT INTO personnel VALUES('1','Hamda Mare','panolex@sbcglobal.net','Hillcrest Avenue','37764');
-
-		--drivers who own a truck
-		INSERT INTO drivers VALUES('12222','Single Trailer','2111');
-
-		--drivers who do not own a truck
-		INSERT INTO drivers VALUES('13333','HAZMAT',NULL);
-		INSERT INTO service_fulfillments VALUES('2015-07-30 03:47:43','1111111','1','2111','12222','1','NULLID');''')
-	connection.commit()
 
 
 
@@ -146,364 +21,155 @@ def create_tables():
 	global connection, cursor
 
 	cursor.executescript('''
-	-- CMPUT 291 - Winter 2018 
-	-- TABLES for Project #1, assuming SQLite as database engine (uses the TEXT data type) 
-
-	-- The following commands drops the tables in case they exist from earlier runs. 
-	DROP TABLE IF EXISTS users;
-	DROP TABLE IF EXISTS trucks;
-	DROP TABLE IF EXISTS maintenance_records;
-	DROP TABLE IF EXISTS containers;
-	DROP TABLE IF EXISTS waste_types;
-	DROP TABLE IF EXISTS container_waste_types;
-	DROP TABLE IF EXISTS personnel;
-	DROP TABLE IF EXISTS account_managers;
-	DROP TABLE IF EXISTS drivers;
-	DROP TABLE IF EXISTS accounts;
-	DROP TABLE IF EXISTS service_agreements;
-	DROP TABLE IF EXISTS service_fulfillments;
+		-- The following commands drops the tables in case they exist from earlier runs. 
+		DROP TABLE IF EXISTS users;
+		DROP TABLE IF EXISTS service_fulfillments;
+		DROP TABLE IF EXISTS service_agreements;
+		DROP TABLE IF EXISTS accounts;
+		DROP TABLE IF EXISTS drivers;
+		DROP TABLE IF EXISTS account_managers;
+		DROP TABLE IF EXISTS personnel;
+		DROP TABLE IF EXISTS container_waste_types;
+		DROP TABLE IF EXISTS waste_types;
+		DROP TABLE IF EXISTS containers;
+		DROP TABLE IF EXISTS maintenance_records;
+		DROP TABLE IF EXISTS trucks;
 
 
-	-- The following commands create the tables including FOREIGN KEY constraints
+		-- The following commands create the tables including FOREIGN KEY constraints
 
-	CREATE TABLE users (
-	  user_id	TEXT, 
-	  role		TEXT,
-	  login		TEXT, 
-	  password	TEXT, 
-	  PRIMARY KEY (user_id),
-	  FOREIGN KEY (user_id) REFERENCES personnel(pid) ON DELETE CASCADE
-	);
+		CREATE TABLE users (
+		  user_id	TEXT, 
+		  role		TEXT,
+		  login		TEXT, 
+		  password	TEXT, 
+		  PRIMARY KEY (user_id),
+		  FOREIGN KEY (user_id) REFERENCES personnel(pid) ON DELETE CASCADE
+		);
 
 
-	CREATE TABLE trucks (
-	  truck_id          TEXT,
-	  model             TEXT,
-	  truck_type        TEXT,
-	  PRIMARY KEY (truck_id) 
-	);
+		CREATE TABLE trucks (
+		  truck_id          TEXT,
+		  model             TEXT,
+		  truck_type        TEXT,
+		  PRIMARY KEY (truck_id) 
+		);
 
-	CREATE TABLE maintenance_records (
-	  truck_id          TEXT,
-	  service_date      DATE,
-	  description       TEXT,
-	  PRIMARY KEY (truck_id, service_date),
-	  FOREIGN KEY (truck_id) REFERENCES trucks ON DELETE CASCADE
-	);
+		CREATE TABLE maintenance_records (
+		  truck_id          TEXT,
+		  service_date      DATE,
+		  description       TEXT,
+		  PRIMARY KEY (truck_id, service_date),
+		  FOREIGN KEY (truck_id) REFERENCES trucks ON DELETE CASCADE
+		);
 
-	CREATE TABLE containers (
-	  container_id      TEXT,
-	  container_type    TEXT,
-	  date_when_built   DATE,
-	  PRIMARY KEY (container_id)
-	);
+		CREATE TABLE containers (
+		  container_id      TEXT,
+		  container_type    TEXT,
+		  date_when_built   DATE,
+		  PRIMARY KEY (container_id)
+		);
 
-	CREATE TABLE waste_types (
-	    waste_type      TEXT,
-	    PRIMARY KEY (waste_type)
-	);
+		CREATE TABLE waste_types (
+		    waste_type      TEXT,
+		    PRIMARY KEY (waste_type)
+		);
 
-	CREATE TABLE container_waste_types (
-	  container_id      TEXT,
-	  waste_type        TEXT,
-	  PRIMARY KEY (container_id, waste_type),
-	  FOREIGN KEY (container_id) REFERENCES containers,
-	  FOREIGN KEY (waste_type) REFERENCES waste_types
-	);
+		CREATE TABLE container_waste_types (
+		  container_id      TEXT,
+		  waste_type        TEXT,
+		  PRIMARY KEY (container_id, waste_type),
+		  FOREIGN KEY (container_id) REFERENCES containers,
+		  FOREIGN KEY (waste_type) REFERENCES waste_types
+		);
 
-	CREATE TABLE personnel (
-	  pid               TEXT, 
-	  name              TEXT, 
-	  email             TEXT, 
-	  address           TEXT, 
-	  supervisor_pid    TEXT, 
-	  PRIMARY KEY (PID)
-	);
+		CREATE TABLE personnel (
+		  pid               TEXT, 
+		  name              TEXT, 
+		  email             TEXT, 
+		  address           TEXT, 
+		  supervisor_pid    TEXT, 
+		  PRIMARY KEY (PID)
+		);
 
-	CREATE TABLE account_managers (
-	  pid               TEXT,
-	  manager_title     TEXT,
-	  office_location   TEXT,
-	  PRIMARY KEY (pid),
-	  FOREIGN KEY (pid) REFERENCES personnel
-	);
+		CREATE TABLE account_managers (
+		  pid               TEXT,
+		  manager_title     TEXT,
+		  office_location   TEXT,
+		  PRIMARY KEY (pid),
+		  FOREIGN KEY (pid) REFERENCES personnel
+		);
 
-	CREATE TABLE drivers (
-	  pid               TEXT,
-	  certification     TEXT,
-	  owned_truck_id    TEXT,
-	  PRIMARY KEY (pid),
-	  FOREIGN KEY (pid) REFERENCES personnel,
-	  FOREIGN KEY (owned_truck_id) REFERENCES trucks(truck_id)
-	);
+		CREATE TABLE drivers (
+		  pid               TEXT,
+		  certification     TEXT,
+		  owned_truck_id    TEXT,
+		  PRIMARY KEY (pid),
+		  FOREIGN KEY (pid) REFERENCES personnel,
+		  FOREIGN KEY (owned_truck_id) REFERENCES trucks(truck_id)
+		);
 
-	CREATE TABLE accounts (
-	  account_no        TEXT,
-	  account_mgr       TEXT,
-	  customer_name     TEXT,
-	  contact_info      TEXT,
-	  customer_type     TEXT,
-	  start_date        DATE,
-	  end_date          DATE,
-	  total_amount      REAL,
-	  PRIMARY KEY (account_no),
-	  FOREIGN KEY (account_mgr) REFERENCES account_managers(pid)
-	);
+		CREATE TABLE accounts (
+		  account_no        TEXT,
+		  account_mgr       TEXT,
+		  customer_name     TEXT,
+		  contact_info      TEXT,
+		  customer_type     TEXT,
+		  start_date        DATE,
+		  end_date          DATE,
+		  total_amount      REAL,
+		  PRIMARY KEY (account_no),
+		  FOREIGN KEY (account_mgr) REFERENCES account_managers(pid)
+		);
 
-	CREATE TABLE service_agreements (
-	  service_no        TEXT,
-	  master_account    TEXT,
-	  location          TEXT,
-	  waste_type        TEXT,
-	  pick_up_schedule  TEXT,
-	  local_contact     TEXT,
-	  internal_cost     REAL,
-	  price             REAL,
-	  PRIMARY KEY (master_account, service_no),
-	  FOREIGN KEY (master_account) REFERENCES accounts ON DELETE CASCADE, 
-	  FOREIGN KEY (waste_type) REFERENCES waste_types
-	); 
-	  
-	CREATE TABLE service_fulfillments (
-	  date_time         DATE,
-	  master_account    TEXT, 
-	  service_no        TEXT,
-	  truck_id          TEXT,
-	  driver_id         TEXT,
-	  cid_drop_off      TEXT,
-	  cid_pick_up       TEXT,
-	  PRIMARY KEY (date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up)
-	  FOREIGN KEY (master_account, service_no) REFERENCES service_agreements,
-	  FOREIGN KEY (truck_id) REFERENCES trucks,
-	  FOREIGN KEY (driver_id) REFERENCES drivers(pid),
-	  FOREIGN KEY (cid_drop_off) REFERENCES containers(container_id),
-	  FOREIGN KEY (cid_pick_up) REFERENCES containers(container_id)
-	);''')
+		CREATE TABLE service_agreements (
+		  service_no        TEXT,
+		  master_account    TEXT,
+		  location          TEXT,
+		  waste_type        TEXT,
+		  pick_up_schedule  TEXT,
+		  local_contact     TEXT,
+		  internal_cost     REAL,
+		  price             REAL,
+		  PRIMARY KEY (master_account, service_no),
+		  FOREIGN KEY (master_account) REFERENCES accounts ON DELETE CASCADE, 
+		  FOREIGN KEY (waste_type) REFERENCES waste_types
+		); 
+		  
+		CREATE TABLE service_fulfillments (
+		  date_time         DATE,
+		  master_account    TEXT, 
+		  service_no        TEXT,
+		  truck_id          TEXT,
+		  driver_id         TEXT,
+		  cid_drop_off      TEXT,
+		  cid_pick_up       TEXT,
+		  PRIMARY KEY (date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up)
+		  FOREIGN KEY (master_account, service_no) REFERENCES service_agreements,
+		  FOREIGN KEY (truck_id) REFERENCES trucks,
+		  FOREIGN KEY (driver_id) REFERENCES drivers(pid),
+		  FOREIGN KEY (cid_drop_off) REFERENCES containers(container_id),
+		  FOREIGN KEY (cid_pick_up) REFERENCES containers(container_id)
+		);''')
 	cursor.execute(' PRAGMA forteign_keys=ON; ')
 	connection.commit()
 
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------ACCOUNT MANAGER Functonality----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def account_managerQ1(username):
-global connection, cursor
-# We select the customer information of all the customers that the user manages
-#then we run our query which outputs the customer information that this manager manages
-
-SELECT 
-t1= (username)
-cursor.execute('''
-		SELECT a.customer_name, a.contact_info,a.customer_type,s.service_no,s.master_account, s.location,s.waste_type,s.pick_up_schedule,s.local_contact,s.internal_cost,s.price 
-		FROM accounts a, service_agreements s, account_managers m, personnel p 
-		WHERE p.name=? AND p.pid = m.pid AND m.pid = a.account_mgr AND s.master_account = a.account_no ORDER BY s.service_no''', (t1,))
-customer_info = cursor.fetchall()
-print(customer_info)
 
 
 
-
-#Q2- user adds a new customer account to the database
-def account_managerQ2(username):
+# ADD DATA TO THE TABLE
+def add_data():
 	global connection, cursor
-	#Create a new master account with all the required information. The manager of the account should be automatically set to the id of the account manager who is creating the account.
-	#first we select the id of the account manager with the manager name equal to the login name
-	t1 = (username,)
-	cursor.execute('SELECT  m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?', (t1))
-	info = cursor.fetchall()
-	for i in info:
-		for x in i:
-			#we now have the manager id
-			mid = (x,)
-			#grab new customer information from user 
-			account_no = raw_input('Enter an account number: ')
-			#make sure its len is 8 
 
-
-			start_date = raw_input('Enter a start_date: ')
-			#copy hamses date check
-			end_date = raw_input('Enter an end-date: ')
-			#copy hamses date check
-			
-			customer_name = raw_input('Enter a customer_name: ')
-			#make sure customer name is not null
-			customer_type = raw_input('Enter a customer_type: ')
-			#make sure customer type is one of the types that we have
-
-			contact_info = raw_input('Enter customer contact information (ex.000-000-0000): ')
-			#make sure format is correct
-
-			total_amount = raw_input('Enter a total amount: ')
-			#make sure len is greater than 0
-
-
-			# now create a new customer account with the manager id
-			cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(customer_type,),str(start_date,),str(end_date,),str(total_amount,)))
-			connection.commit()
-			time.sleep(0.2)
-			print('.....')
-			print('Created a new customer account!\n')
-
-
-			#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
-			print('Would you like to create a service agreement for this customer?')
-			create_sa = raw_input('Enter Y for Yes or N for No: ')
-			#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
-			if create_sa == 'N' or 'n':
-				print('\n Would you like to create a service agreement for any other customers?')
-				sa = raw_input('Enter Y for Yes or N for No: ')
-				#if yes we add a service agreement to the another customer 
-				if sa == 'Y' or 'y':
-					account_managerQ3(username);
+	cursor.executescript('''''')
+	connection.commit()
 
 
 
 
-			#if user chooses to create a service agreement for the newly added customer
-			elif create_sa == 'Y' or 'y':
-				#select all the service numbers that we have 
-				location = raw_input('Enter a location: ')
-				waste_type = raw_input('Enter a waste_type: ')
-				pick_up_schedule = raw_input('Enter a pick up schedule: ')
-				local_contact = raw_input('Enter a local contact: ')
-				internal_cost = raw_input('Enter the internal cost: ')
-				price = raw_input('Enter a price: ')
-				master_account = account_no
-
-				#check if inputed customer info is valid 
-				#randomly select a service number 
-				service_no = random.randint(0,100)
-				cursor.execute('SELECT service_no FROM service_agreements')
-				badSA = cursor.fetchall()
-				#if randomly selected service number is in use randomly select another one 
-				for i in badSA:
-					while (i == service_no):
-						service_no = random.randint(0,100)
-						return service_no
-
-				if valid_Q3:
-					cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
-					print('\nservice agreement created!')
-
-
-
-
-
-#Q3-if user decides to create a service agreement for a customer that already exists 
-def account_managerQ3(username):
-	#First we get the manager id for the account manager
-	t1 = (username,)
-	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
-	#grab the list of manager pid 
-	info = cursor.fetchall()
-	i=(info[0])
-	mid = i[0]
-	#print all the custoemers an account manaager manages
-	print("\nThese are all the customers you manage:")
-	cursor.execute('SELECT a.customer_name  FROM accounts a WHERE a.account_mgr = ?', (mid,))
-	customer_names = cursor.fetchall()
-	print(customer_names[0][0])
-
-
-	#then we get the customer who the account manager wants to make a service agreeement for
-	customer_name = raw_input('\nWhat is the name of the customer you want to create a service agreement for?: ')
-	if customer_names[0][0] == customer_name:
-
-		print(customer_names[0][0])
-
-		cursor.execute('SELECT a.account_no,a.account_mgr FROM accounts a, account_managers m WHERE a.customer_name = ?',((customer_name,)))
-		account_num = cursor.fetchall()
-		a_mgr = account_num[0][1]
-		a_no = account_num[0][0]
-
-
-		#if account manager selects a cusotmer that they do not manage we exit
-		#then we print the customer names fro the user to select from 
-		if a_mgr != mid:
-			print('Sorry you do not manage this customer')
-		
-		#account manager selects a customer they manage and we grab service agreement information
-		else:
-		#randomly select a service number 
-			service_no = random.randint(0,100)
-			cursor.execute('SELECT service_no FROM service_agreements')
-			badSA = cursor.fetchall()
-			#if randomly selected service number is in use randomly select another one 
-			for i in badSA:
-				if i[:] == service_no:
-					print(i)
-					service_no.random.randint(0,100)
-					print(service_no)
-				
-				else:
-				#prompt user to enter values for a service agreement 
-					location = raw_input('Enter a location: ')
-					waste_type = raw_input('Enter a waste_type: ')
-					pick_up_schedule = raw_input('Enter a pick up schedule: ')
-					local_contact = raw_input('Enter a local contact: ')
-					internal_cost = raw_input('Enter the internal cost: ')
-					price = raw_input('Enter a price: ')
-
-					#if the information is valid then we create a service agreement account for this customer
-					valid_Q3(location, waste_type, pick_up_schedule,local_contact, internal_cost,price)
-					
-					#if user inputted information is correctly inputted then we create a new service agreement for the customer
-					if valid_Q3 and i != service_no:
-						cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(a_no,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
-						print('\nService agreement created!')
-						break
-
-
-
-
-#Q4 prints the summary for a single  customer					
-def account_managerQ4(username):
-	#first we select the manager id 
-	t1 = (username,)
-	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
-	
-	#grab the list of manager pid 
-	info = cursor.fetchall()
-	i=(info[0])
-	mid = i[0]
-
-	#Then we grab the customer information
-	print("These are all the customers you manage\n")
-	cursor.execute('SELECT a.customer_name  FROM accounts a WHERE a.account_mgr = ?', (mid,))
-	customer_names = cursor.fetchall()
-	for i in customer_names:
-		print i[0]
-
-
-	#as user to enter customer name
-	customer_name = raw_input('\nWhat is the name of the customer who you want to see a summary report for?: ')
-
-	#if customer name matches with the customer names that the user manages
-	print(customer_names[0][0])
-	if str(customer_names[0][0]) == customer_name:
-		#select the count of services, sum of internal cost, sum of prices, and the count of the different waste types
-		cursor.execute('SELECT COUNT(s.service_no), SUM(s.internal_cost),SUM(s.price), FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ?' ,((customer_name,)))
-		connection.commit()
-		summary = cursor.fetchall()
-		#print the summary for the user
-		cursor.execute('SELECT COUNT(*)  FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ? GROUP BY s.waste_type' ,((customer_name,)))
-		cursor.commit()
-		waste_types = cursor.fetchall()
-		distinct_types = len(waste_types)
-
-		for i in summary:
-			i = newsummary
-		print(distinct_types)
-
-	#if user inputs a customer name that does not match with the customers they manage, add this to the top as a while loop
-	#condition, user must manage this account 
-	else:
-		print('Sorry you do not manage this customer')
-		
-
-
-
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------ACCOUNT MANAGER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # linkes account managers to the many options account managers have
 #add the enter q to logout statement
 def account_manager(username):
@@ -512,17 +178,11 @@ def account_manager(username):
 	print("-------------------------------------------------------------")
 	print("ACCOUNT MANAGER PAGE:")
 	print("-------------------------------------------------------------")
-	print() 'Welcome Account Manager'
-	print
-	logout = input('Enter q to exit')
-	if logout == q:
-		logout()
+	print( 'Welcome Account Manager ', username)
 
-	else:
-		print('What would you like to do?')
-		options = raw_input(' Enter 1 to view the customer information of all customers that you manage:\n Enter 2 to create a new customer account:\n Enter 3 to create a new service agreement for an existing customer:\n Enter 4 to view a customers summary: ')
-
-		while True:
+	print('What would you like to do?')
+	options = input(' Enter 1: View the customer information of all customers that you manage:\n Enter 2: Create a new customer account:\n Enter 3: Create a new service agreement for an existing customer:\n Enter 4: View a customers summary: ')
+	while True:
 			if options =='1':
 				account_managerQ1(username)
 				break
@@ -538,27 +198,647 @@ def account_manager(username):
 			elif options == '4':
 				account_managerQ4(username)
 				break
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------QUESTION 1----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def account_managerQ1(username):
+	global connection, cursor
+	# We select the customer information of all the customers that the user manages
+	# then we run our query which outputs the customer information that this manager manages
+	t1= (username)
+	cursor.execute('''
+			SELECT a.customer_name, a.contact_info,a.customer_type,s.service_no,s.master_account, s.location,s.waste_type,s.pick_up_schedule,s.local_contact,s.internal_cost,s.price 
+			FROM accounts a, service_agreements s, account_managers m, personnel p 
+			WHERE p.name=? AND p.pid = m.pid AND m.pid = a.account_mgr AND s.master_account = a.account_no ORDER BY s.service_no''', (t1,))
+	customer_info = cursor.fetchall()
+	print(customer_info)
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------QUESTION 2----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Q2- user adds a new customer account to the database
+def account_managerQ2(username):
+	global connection, cursor
+	# Create a new master account with all the required information. The manager of the account should be automatically set to the id of the account manager who is creating the account.
+	# first we select the id of the account manager with the manager name equal to the login name
+	t1 = (username,)
+	cursor.execute('SELECT  m.pid,a.account_no FROM personnel p, account_managers m,accounts a WHERE p.pid = m.pid AND p.pid = a.account_mgr AND p.name = ?', (t1))
+	info = cursor.fetchall()
+	print(info)
+	for i in info:
+		#we now have the manager id
+		mid = (i[0],)
+		other_no = i[1]
+		print(mid)
+		print(other_no)
+		#grab new customer information from user 
+
+		while True:
+			account_no = input('ENTER AN ACCOUNT NUMBER(8 DIGITS): ')
+			#make sure its len is 8 
+			if len(account_no) != 8 or account_no == other_no:
+				continue
+			break
+
+		#Get the start date
+		while True:
+			start_date= input("ENTER A START DATE (FORMAT YYYY-MM-DD): ")
+
+			'''# GET THE YEAR
+			date_list= date.split("-")  
+			year=date_list[0]
+			if len(year)!=4:
+				print('L')
+				continue
+			# GET THE MONTH
+			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+			month=date_list[1]
+			if month not in month_list:
+				print('o')
+				continue
+
+			# GET THE DAY
+			day=date_list[2]
+			if day>31 or day<0:
+				print('V')
+				continue
+
+			# Validate the date the user entered
+			start_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+			if(datetime.datetime.now()<start_date):
+				break
+
+			else:
+				print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
+				print('E')
+				continue
+			'''
+			#return the date
+			break
+		
+		while True:
+			end_date = input("ENTER AN END DATE (FORMAT YYYY-MM-DD): ")
+			break
+		'''
+			date_list= date.split("-")  
+			if(len(date_list)!=3):
+				print('L')
+				continue
+
+			# GET THE YEAR
+			year=date_list[0]
+			if len(year) != 4:
+				print('o')
+				continue
+
+			# GET THE MONTH
+			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+			month=date_list[1]
+			if month not in month_list:
+				print('V')
+				continue
+
+			# GET THE DAY
+			day=date_list[2]
+			if day>31 and day<=0:
+				print('E')
+				continue
 
 
+			#Check to make sure that the start date> todays date
+
+			end_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+
+			if(datetime.datetime.now()>date):
+				print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
+				continue
+				'''
+		
+		#make sure customer name is not null
+		while True:
+			customer_name = input('ENTER A CUSTOMER NAME: ')
+			if len(customer_name) == 0:
+				continue
+			break
+
+		#make sure customer type is one of the types that we have
+		while True:
+			print('SELECT ONE OF THE FOLLOWING CUSTOMER TYPES:')
+			print()
+			print('1.COMMERCIALl\n2.INDUSTRIAL\n3.MUNICIPAL\n4.RESIDENTIAL')
+			print()
+			customer_type = input('ENTER 1,2,3,or 4: ')
+
+			if customer_type == '1':
+				Type = 'commercial'
+				break
+
+			elif customer_type == '2':
+				Type = 'industrial'
+				break
+
+			elif  customer_type== '3':
+				Type=='municipal'
+				break
+
+			elif customer_type == '4':
+				Type = 'residential'
+				break
+
+			else:
+				continue
+			break
+
+		#make contact info is correct fix in class
+		while True:
+			contact_info = input('ENTER CUSTOMER CONTACT INFO (FORMAT 000-000-0000): ')
+			#ohone_list 
+			phone_list=['0','1','2','3','4','5','6','7','8','9','10','11','12']
+			if len(contact_info) != 12:
+					continue
+			break
+
+		#make sure user enters a total amount
+		while True:
+			total_amount = input('Enter a total amount: ')
+			if len(total_amount)==0:
+				continue
+			break
+		
+		# now create a new customer account with the manager id
+		cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(Type,),str(start_date,),str(end_date,),str(total_amount,)))
+		connection.commit()
+		time.sleep(0.2)
+		print('.....')
+		print('Created a new customer account!\n')
+		print()
+
+		#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
+		print('Would you like to create a service agreement for this customer?')
+		create_sa = input('Enter Y for Yes or N for No: ')
+		#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
+		if create_sa == 'N' or 'n':
+			print()
+			print('Would you like to create a service agreement for any other customers?')
+			sa = input('Enter Y for Yes or N for No: ')
+			#if yes we add a service agreement to the another customer 
+			if (sa == 'Y' or sa == 'y'):
+				account_managerQ3(username);
+			elif(sa == 'N' or sa =='n'):
+				option = input('Enter q to logout or h to return back to homepage: ')
+				if(option == 'H' or option == 'h'):
+					account_manager(username)
+				elif(option == 'q' or option == 'Q'):
+					logout()
+				
+		#if user chooses to create a service agreement for the newly added customer
+		elif (create_sa == 'Y' or 'y'):
+			#select all the service numbers that we have 
+			location = input('Enter a location: ')
+			waste_type = input('Enter a waste_type: ')
+			pick_up_schedule = input('Enter a pick up schedule: ')
+			local_contact = input('Enter a local contact: ')
+			internal_cost = input('Enter the internal cost: ')
+			price = input('Enter a price: ')
+			master_account = account_no
+
+			#check if inputed customer info is valid 
+			#randomly select a service number 
+			service_no = random.randint(0,100)
+			cursor.execute('SELECT service_no FROM service_agreements')
+			badSA = cursor.fetchall()
+			#if randomly selected service number is in use randomly select another one 
+			for i in badSA:
+				while (i == service_no):
+					service_no = random.randint(0,100)
+					return service_no
+		
+			cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
+			print('\nservice agreement created!')
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------QUESTION 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Q3-if user decides to create a service agreement for a customer that already exists 
+def account_managerQ3(username):
+	#First we get the manager id for the account manager
+	t1 = (username,)
+	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
+	#grab the list of manager pid 
+	info = cursor.fetchall()
+	i=(info[0])
+	mid = i[0]
+	#print all the custoemers an account manaager manages
+	print("\nThese are all the customers you manage:")
+	cursor.execute('SELECT a.customer_name,a.account_no  FROM accounts a, personnel p, account_managers m WHERE m.pid = p.pid and p.pid = a.account_mgr and p.pid = ?', (mid,))
+	customer_info= cursor.fetchall()
+	#select customer name
+	customer_names = customer_info[0][0]
+	#select customer number
+	customer_nums = customer_info[0][1]
+	print('Customer names: ',customer_names)
+	print('Account number corresponding to the name ',customer_nums)
+	while True:
+		#then we get the customer who the account manager wants to make a service agreeement for
+		customer_name = input('\nWhat is the name of the customer you want to make a servic agreement for?: ')
+		customer_num = input('\nWhat is the account number of the customer: ')
+		#check to see if customer_num is coorect
+		if(customer_name != customer_names):
+			print('Sorry you do not manage this customer')
+			continue
+
+		elif (customer_num != customer_nums):
+			print('inccorect customer account number')
+			continue
+
+		#check if account_number and customer name match up 
+		print(mid)
+		print(customer_name)
+		print(customer_num)
+		cursor.execute('SELECT a.account_no from accounts a WHERE a.customer_name = ? and a.account_mgr = ? and a.account_no = ?',(customer_name,mid,customer_num))
+		account_no= cursor.fetchall()
+		print(account_no)
+
+		if account_no[0][0] != customer_num:
+			print('Incorrect account number or customer name')
+			continue
+		break
 	
+	#initialize account number as the enterd customer number
+	a_no = customer_num 
+	#account manager selects a customer they manage and we grab service agreement information
+	#randomly select a service number 
+	service_no = random.randint(0,100)
+	cursor.execute('SELECT service_no FROM service_agreements')
+	badSA = cursor.fetchall()
+	#if randomly selected service number is in use randomly select another one 
+	if badSA[0][:] == service_no:
+		print(badSA[0][:] )
+		service_no.random.randint(0,100)
+		print(service_no)
+	
+	else:
+		#prompt user to enter values for a service agreement 
+		while True:
+			location = input('Enter a location: ')
+			if len(location) == 0:
+				continue
+			break
+
+		while True:
+			print('select from one of the following')
+			option = input('1.hazardous waste\n2.mixed waste\n3.construction waste\n4.metal\n5.compost\n6.paper\n7.plastic: ')
+
+			if option == '1':
+				waste_type = 'hazardous waste'
+				break
+
+			elif option == '2':
+				waste_type = 'mixed waste'
+				break
+
+			elif option == '3':
+				waste_type = 'construction waste'
+				break
+
+			elif option == '4':
+				waste_type = 'metal'
+				break
+
+			elif option == '5':
+				waste_type = 'compost'
+				break
+
+			elif option == '6':
+				waste_type = 'paper'
+				break
+
+			elif option == '7':
+				waste_type = 'plastic'
+				break
+			else:
+				continue
+		#testcase for pickup schedule
+
+		pick_up_schedule = input('Enter a pick up schedule: ')
+		#testcase for local contact
+		local_contact = input('Enter a local contact: ')
+
+		while True:
+			internal_cost = input('Enter the internal cost: ')
+			if len(internal_cost)==0:
+				continue
+			break
+		while True:
+			price = input('Enter a price: ')
+			if len(price) == 0:
+				continue
+			break
+
+		#if the information is valid then we create a service agreement account for this customer
+		print(location)
+		print(internal_cost)
+		print(price)
+		cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(a_no,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
+		print('\nService agreement created!')
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------SUPERVISOR FUNCTIONALIT----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------QUESTION 4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Q4 prints the summary for a single  customer					
+def account_managerQ4(username):
+	#first we select the manager id 
+	t1 = (username,)
+	cursor.execute('SELECT m.pid FROM personnel p, account_managers m WHERE p.pid = m.pid AND p.name = ?',(t1))
+	
+	#grab the list of manager pid 
+	info = cursor.fetchall()
+	i=(info[0])
+	mid = i[0]
+
+	#Then we grab the customer information
+	print("These are all the customers you manage\n")
+	cursor.execute('SELECT a.customer_name,a.account_no FROM accounts a WHERE a.account_mgr = ?', (mid,))
+	customer_info = cursor.fetchall()
+	customer_names = customer_info[0][0]
+	account_nos = customer_info[0][1]
+	print(customer_names)
+	print(account_nos)
+
+	while True:
+		#as user to enter customer name
+		customer_name = input('\nWhat is the name of the customer who you want to see a summary report for?: ')
+		customer_no = input('\nWhat is the account number of the customer who you want to see a summary report for?: ')
+
+		#grab the account number if user input is valid
+		cursor.execute('SELECT a.account_no from accounts a WHERE a.customer_name = ? and a.account_mgr = ? and a.account_no = ?',(customer_name,mid,customer_no))
+		account_no= cursor.fetchall()
+		if account_no[0][0] != customer_no:
+			print('Inccorecct account number or customer name')
+			continue
+		elif str(customer_names[0][0]) == customer_name:
+			continue
+		break
+		
+		#select the count of services, sum of internal cost, sum of prices, and the count of the different waste types
+		cursor.execute('SELECT COUNT(s.service_no), SUM(s.internal_cost),SUM(s.price), FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ? AND a.account_no = ?' ,(customer_name,account_no))
+		connection.commit()
+		summary = cursor.fetchall()
+		#print the summary for the user
+		cursor.execute('SELECT COUNT(*)  FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = ? AND a.customer_name = ? GROUP BY s.waste_type' ,(customer_name,account_no))
+		cursor.commit()
+		waste_types = cursor.fetchall()
+		distinct_types = len(waste_types)
+
+		for i in summary:
+			i = newsummary
+		print(distinct_types)
+
+	#if user inputs a customer name that does not match with the customers they manage, add this to the top as a while loop
+	#condition, user must manage this account 
+	else:
+		print('Sorry you do not manage this customer')
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def supervisor():
-	pass
+
+
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------SUPERVISOR FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def Supervisor(username):
+	print("Welcome Supervisor!\n")
+	global cursor, connection
+	cursor.execute('''SELECT user_id FROM users where login = ?''', (username,))
+	connection.commit()
+	supervisor_pid = cursor.fetchone()
+	while True:
+	    print("Enter q to exit")
+	    print("Enter m to create a new master account")
+	    print("Enter s for a summary report for single customer")
+	    decision = input("Enter a for account manager summary report")
+	    if decision == 'm' or decision == 'M':
+	        create_master_account()
+	        break
+	    if decision == 's' or decision == 'S':
+	        summary_customer()
+	        break
+	    if decision == 'a' or decision == 'A':
+	        summary_account_manager(supervisor_pid)
+	        break
+	    else
+	        logout()
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------Question 1----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def create_master_account(username):
+    global connection, cursor
+    while True:
+        account_no = input("Enter an account number: ")
+        if len(account_no) == 8:
+            break
+    while True:
+        manager = input("Select the account manager's PID:")
+        cursor.execute('''Select *
+                            FROM account_manager
+                            WHERE pid = ?''', (manager,))
+        exists = cursor.fetchall()
+        if exists != []:
+            break
+
+    while True:
+        start_date=input("Enter the start date: ")
+    while True:
+        end_date=input("Enter the end date: ")
+    customer_name=input("Enter the customer name: ")
+    contact_info=input("Enter the contact info: ")
+    customer_type=input("Enter the customer type: ")
+    total_amount=input("Enter the total amount: ")
+
+    cusor.execute('INSERT INTO account VALUES(?,?,?,?,?,?,?,?)', (account_no, manager, customer_name, contact_info, customer_type, start_date, total_amount))
+    connection.commit()
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------Question 2-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def summary_customer(supervisor_pid):
+    global cursor, connection
+    cusor.execute('''SELECT p.name FROM personnel p, account_managers a WHERE a.pid = p.pid AND p.supervisor_pid = ?''', (supervisor_pid,))
+    managers = cursor.fetchall()
+    connection.commit()
+    print("AVAILABLE MANAGERS:\n")
+    print("--"*80)
+    for i in managers:
+        print(i)
+    print("--"*80)
+    while True:
+        manager_selection = input("PLEASE SELECT ONE OF THE MANAGERS:")
+        cursor.execute('''SELECT p.name
+        FROM account_managers a, personnel p
+        WHERE a.pid = p.pid
+        AND p.supervisor_pid = ?
+        AND p.name = ?''', (supervisor_pid,manager_selection))
+        chosen_manager = cursor.fetchall()
+        connection.commit()
+        if len(chosen_manager) >= 2:
+            while True:
+                cursor.execute('''SELECT p.pid
+                                FROM account_managers a, personnel p
+                                WHERE a.pid = p.pid
+                                AND p.supervisor_pid = ?
+                                AND p.name = ?''', (supervisor_pid, manager_selection))
+                duplicate_managers = cursor.fetchall()
+                connection.commit()
+                print("DUPLICATE MANAGER PLEASE SPECIFY PERSONNEL ID FROM BELOW:")
+                print("--"*80)
+                for i in duplicate_managers:
+                        print(i)
+                print("--"*80)
+                chosen_pid = input("SELECT MANAGER PID:")
+                check_pid = cursor.execute('''SELECT p.pid
+                                                    FROM accounts a, personnel p
+                                                    WHERE a.account_mgr = p.pid
+                                                    AND p.supervisor_pid = ?
+                                                    AND p.pid = ?
+                                                    AND p.name = ?''',(supervisor_pid,chosen_pid, chosen_manager))
+                if check_pid != []
+                    manager_selection = chosen_pid
+                    break
+                break
+        if chosen_manager != []:
+            cursor.execute('''SELECT p.pid
+            FROM personnel p, account_managers a
+            WHERE  a.pid = p.pid
+            AND p.name = ?
+            AND p.supervisor_pid = ?''', (manager_selection, supervisor_pid))
+            manager_selection = cursor.fetchone()
+            connection.commit()
+            break
+
+        print("AVAILABLE MANAGERS:\n")
+        print("--"*80)
+        for i in managers:
+            print(i)
+        print("--"*80)
+        print("\n")
+
+    print("AVAILABLE CUSTOMERS:\n")
+    print("--"*80)
+    cursor.execute('''SELECT customer_name FROM accounts WHERE account_mgr = ?''', (chosen_manager,))
+    available_customers = cursor.fetchall()
+    connection.commit()
+    for i in available_customers:
+        print(i)
+    print("--"*80)
+    print("\n")
+
+    while True:
+        customer_selection = input("PLEASE SELECT ONE OF THE CUSTOMERS: ")
+        cursor.execute('''SELECT customer_name FROM accounts WHERE account_mgr = ?''', (manager_selection,))
+        chosen_customer = cursor.fetchall()
+        connection.commit()
+        if len(chosen_customer) >= 2:
+            while True:
+                cursor.execute('''SELECT account_no
+                FROM accounts
+                WHERE customer_name = ?
+                AND account_mgr = ?''', (customer_selection,manager_selection))
+                account_numbers = cursor.fetchall()
+                connection.commit()
+                print("DUPLICATE CUSTOMER NAMES CHOOSE ACCOUNT NUMBER FROM BELOW\n")
+                print("--"*80)
+                for i in account_numbers:
+                    print(i)
+                print("--"*80)
+                account_chosen = input("PLEASE ENTER ACCOUNT NUMBER:")
+                cursor.execute('''SELECT account_no
+                FROM accounts a
+                WHERE customer_name = ?
+                AND account_mgr = ?
+                AND account_no = ?''', (customer_selection,manager_selection,account_chosen))
+                customer_account = cursor.fetchone()
+                if customer_account != []:
+                    break
+                break
+        if chosen_customer != []
+            cursor.execute('''SELECT a.account_no
+            FROM accounts a
+            WHERE m.account_mgr = ?
+            AND a.customer_name = ?''', (manager_selection, customer_selection))
+            customer_account = cursor.fetchone()
+            connection.commit()
+            break
+        for i in available_customers:
+            print(i)
+        print("--"*80)
+        print("\n")
+
+    cursor.execute('''SELECT count(s.service_no), sum(s.price), sum(s.internal_cost)
+                    FROM service_agreements s
+                    WHERE s.master_account = ?
+                    GROUP BY s.waste_type''', (customer_account,))
+                    summary = cursor.fetchall()
+                    connection.commit()
+
+                    cursor.execute('''SELECT count(*)
+                    FROM service_agreements s
+                    WHERE s.master_account = ?
+                    GROUP BY s.waste_type''', (customer_account,))
+                    waste_types = cursor.fetchall()
+                    connection.commit()
+                    number_types = len(waste_types)
+
+                    for i in summary:
+                        print(i)
+                    print(number_types)
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------Question 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------DRIVER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+# Drivers must be able to perform the following task:
+# For a given date range, list all the tours that they have been assigned to. The information about a tour consists of the the following:
+# The location where to exchange containers.
+# The local contact information for the service agreement.
+# The waste_type involved in the service agreement.
+# The container ID of the container to be dropped off.
+# The container ID of the container to be picked up.
 def driver():
 	global connection, cursor
+
+	print("\n"*40)
+	print("-------------------------------------------------------------")
+	print("WELCOME DRIVER!!")
+	print("-------------------------------------------------------------")
+	print('Enter q to exit!')
+
+	print("\n\n")
 
 	#Get the start date
 	while True:
 		start_date= input("ENTER START DATE (FORMAT YYYY-MM-DD): ")
+		if (start_date=="q" or start_date=="Q"):
+				logout()
+
 		# GET THE YEAR
 		date_list= start_date.split("-")  
 		year=date_list[0]
@@ -584,11 +864,13 @@ def driver():
 			continue
 
 
-
-
 	#Get the end date
 	while True:
 		end_date= input("ENTER END DATE (FORMAT YYYY-MM-DD): ")
+
+		if (end_date=="q" or end_date=="Q"):
+				logout()
+
 		# GET THE YEAR
 		date_list= end_date.split("-")  
 		year=date_list[0]
@@ -612,8 +894,6 @@ def driver():
 		else:
 			continue
 
-
-
 	t=(start_date, end_date)
 	cursor.execute('''
 		SELECT sa.location, sa.local_contact, sa.waste_type, s.cid_drop_off, s.cid_pick_up  
@@ -624,7 +904,6 @@ def driver():
 		and s.date_time=<?''', t)
 	connection.commit()
 	rows=cursor.fetchall()
-
 
 	# Display Tours formatted
 	print()
@@ -642,18 +921,30 @@ def driver():
 		formatted_string="%10s|%10s|%10s|%10s|%10s" %(value[0].ljust(20), value[1].ljust(20), value[2].ljust(20), value[3].ljust(20), value[4].ljust(40))
 		print(formatted_string)
 		print()
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------DISPATCHER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 def dispatcher():
 	global connection, cursor
 
+	print("\n"*40)
+	print("-------------------------------------------------------------")
 	print("WELCOME DISPATCHER!!")
+	print("-------------------------------------------------------------")
+	print('Enter q to exit!')
+
 	print("\n\n")
 
 	# Select a service_agreement, driver, truck, and a container to be dropped off and picked up
@@ -661,7 +952,7 @@ def dispatcher():
 	# Select a service no for a particular service agreement
 	service_no= Dispatcher_getService_no()
 
-	# find master account
+	# Find master account
 	cursor.execute('''
 		select s.master_account
 		from service agreements s
@@ -689,12 +980,14 @@ def dispatcher():
 	# Set the date
 	date=setDate()
 
-	#Create entries in the table service_fulfillments for upcoming days
+	# Create entries in the table service_fulfillments for upcoming days
 	add_service_fulliment(date, master_account, service_no, truck, driver, cid_drop_off, cid_pick_up)
 
 
 
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------ADD TO SERVICE FULFILLMENT TABLE------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Add the entry to the service_fulliment table with the following data
 def add_service_fulliment(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up):
 	global connection, cursor
@@ -703,7 +996,9 @@ def add_service_fulliment(date_time, master_account, service_no, truck_id, drive
 		INSERT INTO service_fulfillments VALUES(?,?,?,?,?,?,?)''',(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up) )
 	connection.commit()
 
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------GET THE SERVICE NO------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Get the service Agreement
 def Dispatcher_getService_no():
 	global connection, cursor
@@ -737,6 +1032,8 @@ def Dispatcher_getService_no():
 	# Get the service_no and validate its correct
 	while True:
 		service_no=input("SELECT THE SERVICE AGREEMENT: ")
+		if (service_no=="q" or service_no=="Q"):
+			logout()
 		if(service_no not in service_no_list):
 			continue
 		else:
@@ -771,13 +1068,18 @@ def Dispatcher_getDriver():
 	# Get the driver and validate its correct
 	while True:
 		driver=input("ENTER DRIVER ID: ")
+		if (driver=="q" or driver=="Q"):
+			logout()
 		if(driver not in drivers_list):
 			continue
 		else:
 			break
 	return driver
 
-# QUESTION 1
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------Question 1------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # If a driver is selected who owns a truck, that truck should be automatically selected; 
 # otherwise the dispatcher also must select a truck.
 def Dispatcher_getTruck(driver):
@@ -825,6 +1127,10 @@ def Dispatcher_getTruck(driver):
 		# Get the truck and validate its correct
 		while True:
 			truck=input("ENTER TRUCK ID: ")
+
+			if (truck=="q" or truck=="Q"):
+				logout()
+
 			if(truck not in truck_list):
 				continue
 			else:
@@ -836,7 +1142,10 @@ def Dispatcher_getTruck(driver):
 	
 	return truck
 
-# QUESTION 2
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------Question 2------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Get the container that were picking up
 def Dispatcher_getPickUp(service_no):
 	global connection, cursor
@@ -879,7 +1188,10 @@ def Dispatcher_getPickUp(service_no):
 	# Return the container to be picked up 
 	return container
 
-# QUESTION 3
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------Question 3------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Get the container that were dropping off
 def Dispatcher_getDropOff(service_no):
 	global connection, cursor
@@ -926,30 +1238,34 @@ def Dispatcher_getDropOff(service_no):
 	# Get the container and validate its correct
 	while True:
 		container=input("ENTER CONTAINER ID: ")
+
+		if (container=="q" or container=="Q"):
+			logout()
 		if(container not in container_list):
 			continue
 		else:
 			break
-
 	# Return the container being dropped off
 	return container
 
-# Question 4
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------Question 4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Set the date for a particular entry
 def setDate():
 
 	date_array=[]
 	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
 
-
 	date_list=[]
 
 	while True:
 
 		while True:
-
-
 			date= input("ENTER DATE (FORMAT YYYY-MM-DD): ")
+			if (date=="q" or date=="Q"):
+				logout()
 			# GET THE YEAR
 			date_list= date.split("-")  
 			year=date_list[0]
@@ -986,11 +1302,19 @@ def setDate():
 	# return the date
 	return date
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
+#------------------------------------FIND ROLE FUNCTION WHEN USER LOGGED IN-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Function find_role returns the role associated to that particular username
 def find_role(username):
 	global connection, cursor
@@ -1008,29 +1332,43 @@ def find_role(username):
 	# Return the role of the user
 	return role
 
-
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------ROLE GATE KEEPER FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Depending on the role, GateKeeper for that tasks asociated to that role
 def Role_GateKeeper(role, username):
 	if (role=="account manager"):
 		account_manager(username)
 		
-			
 	elif (role== "supervisor"):
 		supervisor(username)
 
 			
 	elif (role== "dispatcher"):
 		dispatcher()
-
 			
 	else:
 		driver(username)
 			
-			
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------START FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Begins the main functionallity of the program, endless loop unless loop until the user 
+# exits manually by entering the desired key("q") to end program
+def start(username):
+	print()
+	while True:
+		print('Enter q to exit when Prompted to enter data!!!')
+		role = find_role(username)
+		print(role)
+		Role_GateKeeper(role, username)
 
 
-#Checks the database to authenticate what the user entered is correct
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------AUTHENTICATE FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Checks the database to authenticate what the user entered is correct
 def Authenticate(entered_pwd,username):
 	global connection, cursor
 
@@ -1041,18 +1379,14 @@ def Authenticate(entered_pwd,username):
 	iterations = 100000
 
 	t1=(username,)
-	#Selects the password from the table associated to the user
+	# Selects the password from the table associated to the user
 	cursor.execute('SELECT password FROM users WHERE login==?',t1)
 	connection.commit()
 	rows = cursor.fetchall()
 
-	#If hashed password is the same as the hashed database password then login is successful
-	print(entered_pwd)
-	print(rows)
+	# If hashed password is the same as the hashed database password then login is successful
 	if(rows!=[]):
 		for row in rows:
-			print(row)
-			print(row[0])
 			dk=row[0]
 			dk2 = encrypt_password(entered_pwd)
 			if dk == dk2:
@@ -1060,8 +1394,7 @@ def Authenticate(entered_pwd,username):
 	return status
 
 
-
-#assume user is not in the users table
+# Assume user is not in the users table
 def encrypt_password(password):
 	global connection, cursor
 	status = False
@@ -1074,37 +1407,156 @@ def encrypt_password(password):
 	return dk
 
 
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------LOGIN FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Allows user to log in succesfully with previous username and previous password
+def login():
+	print("\n"*40)
+	print("-------------------------------------------------------------")
+	print("LOGIN PAGE:")
+	print("-------------------------------------------------------------")
+	print('Enter q to exit!')
 
+	count=0
+	while count<3:
+		print("ATTEMPTS REMAINING: %d" % (3-count) )
+		# If user has logged out we dont have to login
+		if logout == True:
+			break
+
+		# Get username
+		username = input("Please enter your Login: ")
+		# Check to see if user enetered q to quit
+		if (username=="q" or username=="Q"):
+			logout()
+		
+		# Get password
+		psw = input("Please enter your Password: ")
+	
+		
+		# Check to see if user enetered q to quit
+		if (psw=="q" or psw=="Q"):
+			logout()
+
+		print ('\n')
+		print ('Authenticating............')
+		time.sleep(0.3)
+
+		# If hashed password is the same as the hashed database password then login is successful
+		status = Authenticate(psw,username)
+		# If Login is not successful, loop back to login
+		if not status:
+			print("Username and Password do not match\n\n")
+			count=count+1
+		# If the user successfully logged in we find its roles
+		if status:
+			start(username)
+
+			
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------GET ROLE FUNCTION FOR CREATING AN ACCOUNT-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Gets the role of a particular user
+def get_role(pid):
+	global cursor, connection
+	# case1: Account Manager Table
+	cursor.execute('''
+		SELECT *
+		FROM personnel p, account_managers a
+		WHERE p.pid=a.pid
+		AND p.pid=?''', (pid,))
+	connection.commit()
+	acccount_manager_table=cursor.fetchall()
+
+	# case2: Driver Table
+	cursor.execute('''
+		SELECT *
+		FROM personnel p, drivers d
+		WHERE p.pid=d.pid
+		AND p.pid=?''', (pid,))
+	connection.commit()
+	driver_table=cursor.fetchall()
+
+	# case3: Supervisor
+	cursor.execute('''
+		SELECT *
+		FROM personnel p
+		WHERE p.supervisor_pid=?''', (pid,))
+	connection.commit()
+	supervisor_table=cursor.fetchall()
+
+	# case1
+	if acccount_manager_table!=[]:
+		role="account manager"
+	# case2
+	elif driver_table!=[]:
+		role="driver"
+	# case3
+	elif supervisor_table!=[]:
+		role="supervisor"
+	# case4
+	else:
+		role="dispatcher"
+
+	return role
+
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------CREATE ACCOUNT FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Creates a user account with the desired information prompted to the user
 def create_account():
 	global cursor, connection
 
-	print()
-	print()
+	print("\n"*40)
 	print("-------------------------------------------------------------")
 	print("CREATE ACCOUNT PAGE:")
 	print("-------------------------------------------------------------")
-	print('Enter q to exit')
-	#PID
-	#Make sure that pid is in personnel
+	print('Enter q to exit!')
+
+	# PID
+	# Make sure that pid is in personnel
 	while True:
-		pid = input('Please enter your personnel identification number: ')	
+		pid = input('Please enter your personnel identification number: ')
+
 		if (pid=="q" or pid=="Q"):
 			logout()
+
+		# Invalid pid
 		cursor.execute('''
 			select *
 			from personnel
 			where pid=?''', (pid,))
-		row=cursor.fetchall
+		row=cursor.fetchall()
+		connection.commit()
 		if row==[]:
+			print("\nPERSONNEL IDENTIFICATION NUMBER IS NOT IN THE SYSTEM!")
 			continue
-		else:
-			break
+		
 
-	#USERNAME
-	#Make sure the username is unique
+		# Account already created
+		cursor.execute('''
+			select *
+			from users
+			where user_id=?''', (pid,))
+		row=cursor.fetchall()
+		connection.commit()
+		
+		if row!=[]:
+			print("\nPID ALREADY HAS A ACCOUNT!")
+			continue
+	
+		break
+
+	
+
+	# USERNAME
+	# Make sure the username is unique
 	while True:
-		username = input('Please enter a username to Login: ')
-		if (pid=="q" or pid=="Q"):
+		username = input('Please enter a Login: ')
+		if (username=="q" or username=="Q"):
 			logout()
 		cursor.execute('''
 			select *
@@ -1113,17 +1565,19 @@ def create_account():
 		row=cursor.fetchall()
 
 		if row!=[]:
+			print("\nUSERNAME IS ALREADY IN USE!")
 			continue
-		else:
-			break
+		
+		break
 
-	
 
-	#PASSWORD
-	password = input('Please enter a password to Login: ')
+	# PASSWORD
+	password = input('Please enter a password: ')
+	if (password=="q" or password=="Q"):
+		logout()
 	encrypt_pass = encrypt_password(password)
 
-	#ROLE
+	# ROLE
 	role=get_role(pid)
 
 	t=(pid,role,username,encrypt_pass)
@@ -1137,118 +1591,20 @@ def create_account():
 	login()
 
 
-def get_role(pid):
-	global cursor, connection
-	#case1: Account Manager Table
-	cursor.execute('''
-		SELECT *
-		FROM personnel p, account_managers a
-		WHERE p.pid=a.pid
-		AND p.pid=?''', (pid,))
-	connection.commit()
-	acccount_manager_table=cursor.fetchall()
 
-
-	#case2: Driver Table
-	cursor.execute('''
-		SELECT *
-		FROM personnel p, drivers d
-		WHERE p.pid=d.pid
-		AND p.pid=?''', (pid,))
-	connection.commit()
-	driver_table=cursor.fetchall()
-
-	#case3: Supervisor
-	cursor.execute('''
-		SELECT *
-		FROM personnel p
-		WHERE p.supervisor_pid=?''', (pid,))
-	connection.commit()
-	supervisor_table=cursor.fetchall()
-
-	print(acccount_manager_table) 
-	print(driver_table)
-	print(supervisor_table)
-
-	#case1
-	if acccount_manager_table!=[]:
-		role="account manager"
-	#case2
-	elif driver_table!=[]:
-		role="driver"
-	#case3
-	elif supervisor_table!=[]:
-		role="supervisor"
-	#case4
-	else:
-		role="dispatcher"
-
-	return role
-
-
-
-#Allows user to log in succesfully with previous username and previous password
-def login():
-	print()
-	print()
-	print("-------------------------------------------------------------")
-	print("LOGIN PAGE:")
-	print("-------------------------------------------------------------")
-	count=0
-
-	while count<3:
-		print("ATTEMPTS REMAINING: %d" % (3-count) )
-		#if user has logged out we dont have to login
-		if logout == True:
-			break
-
-		#get username
-
-		username = input("Please enter your username: ")
-		# Check to see if user enetered q to quit
-		if (username=="q" or username=="Q"):
-			print ('GoodBye')
-			break
-		
-		#get password
-		psw = input("Please enter your password: ")
-		print ('\n')
-		print ('Authenticating............')
-		time.sleep(0.3)
-		
-		# Check to see if user enetered q to quit
-		if (psw=="q" or psw=="Q"):
-			print('GoodBye')
-			break
-
-		#If hashed password is the same as the hashed database password then login is successful
-		status = Authenticate(psw,username)
-		# If Login is not successful, loop back to login
-		if not status:
-			print("\nUsername and Password do not match")
-			count=count+1
-		#if the user successfully logged in we find its roles
-		if status:
-			start(username)
-
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------LOGOUT FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# CALLS TO END PROGRAM
 def logout():
 	print()
 	print("Goodbye!")
 	exit(0)
 
-
-
-def start(username):
-	print()
-	while True:
-		print('Enter q to exit when Prompted to enter data!!!')
-		role = find_role(username)
-		print(role)
-		Role_GateKeeper(role, username)
-
-
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------MAIN FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Mainn function
 def main():
 	global connection, cursor
 
@@ -1262,6 +1618,8 @@ def main():
 	add_data()
 
 
+	print("\n"*40)
+	print("Welcome!")
 	decision= input('PRESS L TO LOGIN IN, OR PRESS C TO CREATE AN ACCOUNT: ')
 	
 	if decision == 'C' or decision== 'c':
