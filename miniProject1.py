@@ -181,55 +181,83 @@ def account_manager(username):
 	print( 'Welcome Account Manager ', username)
 
 	print('What would you like to do?')
-	options = input(' Enter 1: View the customer information of all customers that you manage:\n Enter 2: Create a new customer account:\n Enter 3: Create a new service agreement for an existing customer:\n Enter 4: View a customers summary: ')
 	while True:
-			if options =='1':
-				account_managerQ1(username)
-				break
+		print ()
+		print()
+		print()
+		options = input(' Enter 1 to view the customer information of all customers that you manage:\n Enter 2 to create a new customer account:\n Enter 3 to create a new service agreement for an existing customer:\n Enter 4 to view a customers summary: ')
+		if options =='1':
+			account_managerQ1(username)
+			break
 
-			elif options == '2':
-				account_managerQ2(username)
-				break
+		elif options == '2':
+			account_managerQ2(username)
+			break
 
-			elif options == '3':
-				account_managerQ3(username)
-				break
+		elif options == '3':
+			account_managerQ3(username)
+			break
 
-			elif options == '4':
-				account_managerQ4(username)
-				break
+		elif options == '4':
+			account_managerQ4(username)
+			break
+		else:
+			print('Incorrect option selected')
+			continue
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------FUNCTION CHECKS FOR VALID PHONE NUMBER FORMAT------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#checks for valid phonenumber format
+def valid_contact(contact_info):
+	if len(contact_info) != 12:
+		return False
+	else:
+		for i in range(12):
+			if i in[3,7]:
+				if contact_info[i]!= '-':
+					return False
+			elif contact_info[i].isalpha():
+				return False
+			
+		return True
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------QUESTION 1----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def account_managerQ1(username):
 	global connection, cursor
 	# We select the customer information of all the customers that the user manages
-	# then we run our query which outputs the customer information that this manager manages
+	#then we run our query which outputs the customer information that this manager manages
 	t1= (username)
 	cursor.execute('''
 			SELECT a.customer_name, a.contact_info,a.customer_type,s.service_no,s.master_account, s.location,s.waste_type,s.pick_up_schedule,s.local_contact,s.internal_cost,s.price 
 			FROM accounts a, service_agreements s, account_managers m, personnel p 
 			WHERE p.name=? AND p.pid = m.pid AND m.pid = a.account_mgr AND s.master_account = a.account_no ORDER BY s.service_no''', (t1,))
 	customer_info = cursor.fetchall()
+
+	#print the customer information
 	print(customer_info)
+	print('\n\nWhat would you like to do?\n')
+	option = input("Enter q to exist or h to return back to the homepage: ")
+
+	if (option == 'q' or option == 'Q'):
+		logout()
+	elif (option == 'h' or option == 'H'):
+		account_manager(username)
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------QUESTION 2----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Q2- user adds a new customer account to the database
+#Q2- user adds a new customer account to the database
 def account_managerQ2(username):
 	global connection, cursor
-	# Create a new master account with all the required information. The manager of the account should be automatically set to the id of the account manager who is creating the account.
-	# first we select the id of the account manager with the manager name equal to the login name
+	#Create a new master account with all the required information. The manager of the account should be automatically set to the id of the account manager who is creating the account.
+	#first we select the id of the account manager with the manager name equal to the login name
 	t1 = (username,)
 	cursor.execute('SELECT  m.pid,a.account_no FROM personnel p, account_managers m,accounts a WHERE p.pid = m.pid AND p.pid = a.account_mgr AND p.name = ?', (t1))
 	info = cursor.fetchall()
-	print(info)
 	for i in info:
 		#we now have the manager id
 		mid = (i[0],)
 		other_no = i[1]
-		print(mid)
-		print(other_no)
 		#grab new customer information from user 
 
 		while True:
@@ -238,6 +266,7 @@ def account_managerQ2(username):
 			if len(account_no) != 8 or account_no == other_no:
 				continue
 			break
+
 
 		#Get the start date
 		while True:
@@ -274,6 +303,8 @@ def account_managerQ2(username):
 			'''
 			#return the date
 			break
+
+
 		
 		while True:
 			end_date = input("ENTER AN END DATE (FORMAT YYYY-MM-DD): ")
@@ -312,13 +343,15 @@ def account_managerQ2(username):
 				print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
 				continue
 				'''
-		
+			
+
 		#make sure customer name is not null
 		while True:
 			customer_name = input('ENTER A CUSTOMER NAME: ')
-			if len(customer_name) == 0:
+			if len(customer_name) == 0 or not customer_name.isalpha():
 				continue
 			break
+
 
 		#make sure customer type is one of the types that we have
 		while True:
@@ -350,36 +383,45 @@ def account_managerQ2(username):
 
 		#make contact info is correct fix in class
 		while True:
+			print()
 			contact_info = input('ENTER CUSTOMER CONTACT INFO (FORMAT 000-000-0000): ')
-			#ohone_list 
-			phone_list=['0','1','2','3','4','5','6','7','8','9','10','11','12']
-			if len(contact_info) != 12:
-					continue
+			if valid_contact(contact_info) == False:
+				continue
 			break
+			
+
 
 		#make sure user enters a total amount
 		while True:
+			print()
 			total_amount = input('Enter a total amount: ')
-			if len(total_amount)==0:
+			if (len(total_amount)==0 or total_amount.isalpha()):
 				continue
 			break
 		
+
+
 		# now create a new customer account with the manager id
 		cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(Type,),str(start_date,),str(end_date,),str(total_amount,)))
 		connection.commit()
-		time.sleep(0.2)
-		print('.....')
-		print('Created a new customer account!\n')
-		print()
+		print('...........')
+		print('New Customer Account Created!\n')
+		print
+
+
+
 
 		#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
 		print('Would you like to create a service agreement for this customer?')
+		print()
+		#pause a bit
 		create_sa = input('Enter Y for Yes or N for No: ')
+		print()
 		#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
-		if create_sa == 'N' or 'n':
-			print()
+		if (create_sa == 'N' or create_sa =='n'):
+			print
 			print('Would you like to create a service agreement for any other customers?')
-			sa = input('Enter Y for Yes or N for No: ')
+			sa = input('Enter Y for Yes or N for No: ') 
 			#if yes we add a service agreement to the another customer 
 			if (sa == 'Y' or sa == 'y'):
 				account_managerQ3(username);
@@ -390,30 +432,143 @@ def account_managerQ2(username):
 				elif(option == 'q' or option == 'Q'):
 					logout()
 				
-		#if user chooses to create a service agreement for the newly added customer
-		elif (create_sa == 'Y' or 'y'):
-			#select all the service numbers that we have 
-			location = input('Enter a location: ')
-			waste_type = input('Enter a waste_type: ')
-			pick_up_schedule = input('Enter a pick up schedule: ')
-			local_contact = input('Enter a local contact: ')
-			internal_cost = input('Enter the internal cost: ')
-			price = input('Enter a price: ')
-			master_account = account_no
 
-			#check if inputed customer info is valid 
-			#randomly select a service number 
-			service_no = random.randint(0,100)
-			cursor.execute('SELECT service_no FROM service_agreements')
-			badSA = cursor.fetchall()
-			#if randomly selected service number is in use randomly select another one 
-			for i in badSA:
-				while (i == service_no):
-					service_no = random.randint(0,100)
-					return service_no
-		
-			cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
-			print('\nservice agreement created!')
+		#if user chooses to create a service agreement for the newly added customer
+		elif (create_sa == 'Y' or create_sa =='y'):
+			#select all the service numbers that we have 
+			while True:
+				location = input('Enter a location: ')
+				if(location == 'q' or location == 'Q'):
+					logout()
+				elif len(location) < 3:
+					continue
+				break
+
+			#check for valid waste type
+			while True:
+				print()
+				print('SELECT ONE OF THE FOLLOWING')
+				option = input('1.hazardous waste\n2.mixed waste\n3.construction waste\n4.metal\n5.compost\n6.paper\n7.plastic: ')
+				if option == '1':
+					waste_type = 'hazardous waste'
+					break
+
+				elif option == '2':
+					waste_type = 'mixed waste'
+					break
+
+				elif option == '3':
+					waste_type = 'construction waste'
+					break
+
+				elif option == '4':
+					waste_type = 'metal'
+					break
+
+				elif option == '5':
+					waste_type = 'compost'
+					break
+
+				elif option == '6':
+					waste_type = 'paper'
+					break
+
+				elif option == '7':
+					waste_type = 'plastic'
+					break
+				elif (option == 'Q' or option == 'q'):
+					logout()
+				else:
+					continue
+
+
+			#testcase for pickup schedule
+			while True:
+				print('SELECT FROM ONE OF THE FOLLOWING PICK UP SCHEDULES\n')
+				print('1.Every Monday of every week\n2.Every Tuesday of every week\n3.Every Wednesday of every week\n4.Every Friday of every week\n5.Every Saturday of every week')
+
+				pick_up_schedule = input('Enter a pick up schedule: ')
+
+				if pick_up_schedule == '1':
+					pick_up_schedule = 'Every Monday of every week'
+					break
+
+				elif pick_up_schedule == '2':
+					pick_up_schedule = 'Every Tuesday of every week'
+					break
+
+				elif pick_up_schedule == '3':
+					pick_up_schedule = 'Every Wednesday of every week'
+					break
+
+				elif pick_up_schedule == '4':
+					pick_up_schedule = 'Every Thursday of every week'
+					break
+
+				elif pick_up_schedule == '5':
+					pick_up_schedule = 'Every Friday of every week'
+					break
+
+				else:
+					continue
+
+
+			#testcase for local contact
+			while True:
+				print()
+				local_contact = input('Enter a local contact: ')
+				if valid_contact(local_contact)!= True:
+					continue
+				break
+
+			#check for valid internal cost
+			while True:
+				print()
+				internal_cost = input('Enter the internal cost: ')
+				if (len(internal_cost)==0 or internal_cost.isalpha()):
+					continue
+				break
+
+			#check for valid price
+			while True:
+				print()
+				price = input('Enter a price: ')
+				if (price == 'Q' or price == 'q'):
+					logout
+				elif (len(price) == 0 or price.isalpha()):
+					continue
+				break
+
+
+				master_account = account_no
+
+				#check if inputed customer info is valid 
+				#randomly select a service number 
+				service_no = random.randint(0,100)
+				cursor.execute('SELECT service_no FROM service_agreements')
+				badSA = cursor.fetchall()
+				#if randomly selected service number is in use randomly select another one 
+				for i in badSA:
+					while (i == service_no):
+						service_no = random.randint(0,100)
+
+				#create the service agreement
+				cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
+
+				time.sleep(0.2)
+				print ('..........')
+				print('\nService Agreement Created!')
+
+			#user chooses to return to home or logout
+			print()
+			print()
+			option = input("Enter q to exist or h to return back to the homepage: ")
+			print()
+
+			if (option == 'q' or option == 'Q'):
+				logout()
+			elif (option == 'h' or option == 'H'):
+				account_manager(username)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------QUESTION 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -428,7 +583,7 @@ def account_managerQ3(username):
 	i=(info[0])
 	mid = i[0]
 	#print all the custoemers an account manaager manages
-	print("\nThese are all the customers you manage:")
+	print("\nTHESE ARE ALL THE CUSTOMERS YOU MANAGE:")
 	cursor.execute('SELECT a.customer_name,a.account_no  FROM accounts a, personnel p, account_managers m WHERE m.pid = p.pid and p.pid = a.account_mgr and p.pid = ?', (mid,))
 	customer_info= cursor.fetchall()
 	#select customer name
@@ -437,29 +592,34 @@ def account_managerQ3(username):
 	customer_nums = customer_info[0][1]
 	print('Customer names: ',customer_names)
 	print('Account number corresponding to the name ',customer_nums)
+
+
 	while True:
 		#then we get the customer who the account manager wants to make a service agreeement for
 		customer_name = input('\nWhat is the name of the customer you want to make a servic agreement for?: ')
 		customer_num = input('\nWhat is the account number of the customer: ')
+
 		#check to see if customer_num is coorect
 		if(customer_name != customer_names):
 			print('Sorry you do not manage this customer')
 			continue
 
+		#see if the account num is the same as our selected account number
 		elif (customer_num != customer_nums):
-			print('inccorect customer account number')
+			print('incorrect customer account number')
 			continue
 
+		#check if user wantes to logout or return
+		elif(customer_name == 'q' or customer_name == 'Q' or customer_num == 'q' or customer_num == 'Q'):
+			logout()
+
+
 		#check if account_number and customer name match up 
-		print(mid)
-		print(customer_name)
-		print(customer_num)
 		cursor.execute('SELECT a.account_no from accounts a WHERE a.customer_name = ? and a.account_mgr = ? and a.account_no = ?',(customer_name,mid,customer_num))
 		account_no= cursor.fetchall()
-		print(account_no)
 
 		if account_no[0][0] != customer_num:
-			print('Incorrect account number or customer name')
+			print('Incorecct account number or customer name')
 			continue
 		break
 	
@@ -472,22 +632,26 @@ def account_managerQ3(username):
 	badSA = cursor.fetchall()
 	#if randomly selected service number is in use randomly select another one 
 	if badSA[0][:] == service_no:
-		print(badSA[0][:] )
 		service_no.random.randint(0,100)
-		print(service_no)
-	
+
+
+	#prompt user to enter values for service agreement
 	else:
-		#prompt user to enter values for a service agreement 
+		#check for valid location
 		while True:
+			print()
 			location = input('Enter a location: ')
-			if len(location) == 0:
+			if(location == 'q' or location == 'Q'):
+				logout()
+			elif len(location) < 3:
 				continue
 			break
 
+		#check for valid waste type
 		while True:
+			print()
 			print('select from one of the following')
 			option = input('1.hazardous waste\n2.mixed waste\n3.construction waste\n4.metal\n5.compost\n6.paper\n7.plastic: ')
-
 			if option == '1':
 				waste_type = 'hazardous waste'
 				break
@@ -515,31 +679,83 @@ def account_managerQ3(username):
 			elif option == '7':
 				waste_type = 'plastic'
 				break
+			elif (option == 'Q' or option == 'q'):
+				logout()
 			else:
 				continue
+
+
 		#testcase for pickup schedule
+		while True:
+			print()
+			print('SELECT FROM ONE OF THE FOLLOWING PICK UP SCHEDULES\n')
+			print('1.Every Monday of every week\n2.Every Tuesday of every week\n3.Every Wednesday of every week\n4.Every Friday of every week\n5.Every Saturday of every week')
 
-		pick_up_schedule = input('Enter a pick up schedule: ')
+			pick_up_schedule = input('Enter a pick up schedule: ')
+
+			if pick_up_schedule == '1':
+				pick_up_schedule = 'Every Monday of every week'
+				break
+
+			elif pick_up_schedule == '2':
+				pick_up_schedule = 'Every Tuesday of every week'
+				break
+
+			elif pick_up_schedule == '3':
+				pick_up_schedule = 'Every Wednesday of every week'
+				break
+
+			elif pick_up_schedule == '4':
+				pick_up_schedule = 'Every Thursday of every week'
+				break
+
+			elif pick_up_schedule == '5':
+				pick_up_schedule = 'Every Friday of every week'
+				break
+
+			else:
+				continue
 		#testcase for local contact
-		local_contact = input('Enter a local contact: ')
+		while True:
+			print()
+			local_contact = input('Enter a local contact: ')
+			if valid_contact(local_contact)!= True:
+				continue
+			break
 
+		#check for valid internal cost
 		while True:
+			print()
 			internal_cost = input('Enter the internal cost: ')
-			if len(internal_cost)==0:
+			if (len(internal_cost)==0 or internal_cost.isalpha()):
 				continue
 			break
+
+		#check for valid price
 		while True:
+			print()
 			price = input('Enter a price: ')
-			if len(price) == 0:
+			if (price == 'Q' or price == 'q'):
+				logout
+			elif (len(price) == 0 or price.isalpha()):
 				continue
 			break
+
 
 		#if the information is valid then we create a service agreement account for this customer
-		print(location)
-		print(internal_cost)
-		print(price)
 		cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(a_no,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
-		print('\nService agreement created!')
+		time.sleep(0.2)
+		print ('..........')
+		print('\nService Agreement Created!')
+
+		#allow user the option to continuw or logout
+		print
+		option = input("Enter q to exist or h to return back to the homepage")
+
+		if (option == 'q' or option == 'Q'):
+			logout()
+		elif (option == 'h' or option == 'H'):
+			account_manager(username)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------QUESTION 4----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -556,47 +772,61 @@ def account_managerQ4(username):
 	mid = i[0]
 
 	#Then we grab the customer information
-	print("These are all the customers you manage\n")
+	print("THESE ARE ALL THE CUSTOMERS YOU MANAGE\n")
 	cursor.execute('SELECT a.customer_name,a.account_no FROM accounts a WHERE a.account_mgr = ?', (mid,))
 	customer_info = cursor.fetchall()
 	customer_names = customer_info[0][0]
 	account_nos = customer_info[0][1]
-	print(customer_names)
-	print(account_nos)
+	
 
 	while True:
+		print('Customer names: ' ,customer_names)
+		print('Account numbers: ',account_nos)
 		#as user to enter customer name
+		print
 		customer_name = input('\nWhat is the name of the customer who you want to see a summary report for?: ')
 		customer_no = input('\nWhat is the account number of the customer who you want to see a summary report for?: ')
 
 		#grab the account number if user input is valid
 		cursor.execute('SELECT a.account_no from accounts a WHERE a.customer_name = ? and a.account_mgr = ? and a.account_no = ?',(customer_name,mid,customer_no))
 		account_no= cursor.fetchall()
-		if account_no[0][0] != customer_no:
-			print('Inccorecct account number or customer name')
+
+		if str(customer_names[0][0]) == customer_name:
 			continue
-		elif str(customer_names[0][0]) == customer_name:
+		elif account_no == []:
+			print
+			print('Incorecct account number or customer name\n')
 			continue
 		break
-		
-		#select the count of services, sum of internal cost, sum of prices, and the count of the different waste types
-		cursor.execute('SELECT COUNT(s.service_no), SUM(s.internal_cost),SUM(s.price), FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name = ? AND a.account_no = ?' ,(customer_name,account_no))
-		connection.commit()
-		summary = cursor.fetchall()
-		#print the summary for the user
-		cursor.execute('SELECT COUNT(*)  FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = ? AND a.customer_name = ? GROUP BY s.waste_type' ,(customer_name,account_no))
-		cursor.commit()
-		waste_types = cursor.fetchall()
-		distinct_types = len(waste_types)
 
-		for i in summary:
-			i = newsummary
-		print(distinct_types)
 
-	#if user inputs a customer name that does not match with the customers they manage, add this to the top as a while loop
-	#condition, user must manage this account 
-	else:
-		print('Sorry you do not manage this customer')
+	account_no = (customer_no)
+	#select the count of services, sum of internal cost, sum of prices, and the count of the different waste types
+	cursor.execute('SELECT COUNT(s.service_no), SUM(s.internal_cost),SUM(s.price) FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = a.account_no AND a.customer_name =? AND a.account_no =?' ,(customer_name,account_no))
+	connection.commit()
+	summary = cursor.fetchall()
+	
+
+	cursor.execute('SELECT COUNT(*)  FROM accounts a, account_managers m, service_agreements s WHERE a.account_mgr = m.pid AND s.master_account = ? AND a.customer_name = ? GROUP BY s.waste_type' ,(account_no,customer_name))
+	connection.commit()
+	waste_types = cursor.fetchall()
+
+	#print the summary for the user and the number of distinct waste_types
+	distinct_types = len(waste_types)
+	summarys = []
+	summarys.append(summary[0][:])
+	summarys.append(distinct_types)
+
+	print('Summary: ',summarys)
+	#user chooses to return to account manager page or logout
+
+	option = input("\n\nEnter q to exist or h to return back to the homepage: ")
+
+	if (option == 'q' or option == 'Q'):
+		logout()
+	elif (option == 'h' or option == 'H'):
+		account_manager(username)
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1500,7 +1730,6 @@ def get_role(pid):
 		role="dispatcher"
 
 	return role
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
