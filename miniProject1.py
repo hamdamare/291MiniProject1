@@ -2,8 +2,6 @@
 
 # Citations:
 
-
-
 # Import modules
 from hashlib import pbkdf2_hmac
 import time
@@ -255,8 +253,19 @@ def add_data():
 		INSERT INTO drivers VALUES('12222','HAZMAT',NULL);
 
 
-		INSERT INTO service_fulfillments VALUES('2015-07-30 03:47:43','1111111','1','2111','12222','1','NULLID');''')
+		INSERT INTO service_fulfillments VALUES('2018-07-30 03:47:43','87625036','1','2111','11111','1','0000');
+
+		INSERT INTO service_fulfillments VALUES('2019-07-30 03:47:43','73833854','2', '2111','11111','2','1');
+
+		INSERT INTO service_fulfillments VALUES('2020-07-30 03:47:43','34910788','3','2111','11111','3','0000');
+
+		INSERT INTO service_fulfillments VALUES('2022-07-30 03:47:43','12029871','4','2111','11111','3','4');
+
+		INSERT INTO service_fulfillments VALUES('2023-07-30 03:47:43','85043375','5','2111','11111','4','3');''')
+
 	connection.commit()
+
+	
 
 	a=encrypt_password("2")
 	b=encrypt_password("4")
@@ -278,11 +287,6 @@ def add_data():
 	cursor.execute('''
 		INSERT INTO users VALUES('18888','supervisor','4',?)''', (d,))
 	connection.commit()
-
-
-
-
-
 
 
 
@@ -360,202 +364,225 @@ def account_managerQ2(username):
 				continue
 			break
 
-
-		#Get the start date
-		while True:
-			start_date= input("ENTER A START DATE (FORMAT YYYY-MM-DD): ")
-
-			'''# GET THE YEAR
-			date_list= date.split("-")  
-			year=date_list[0]
-			if len(year)!=4:
-				print('L')
-				continue
-			# GET THE MONTH
-			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
-			month=date_list[1]
-			if month not in month_list:
-				print('o')
-				continue
-
-			# GET THE DAY
-			day=date_list[2]
-			if day>31 or day<0:
-				print('V')
-				continue
-
-			# Validate the date the user entered
-			start_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
-			if(datetime.datetime.now()<start_date):
-				break
-
-			else:
-				print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
-				print('E')
-				continue
-			'''
-			#return the date
-			break
-
-
+	#Get the start date
+	while True:
+		start_date= input("ENTER START DATE (FORMAT YYYY-MM-DD): ")
+		if (start_date=="q" or start_date=="Q"):
+			logout()
 		
-		while True:
-			end_date = input("ENTER AN END DATE (FORMAT YYYY-MM-DD): ")
+		date_list= start_date.split("-")  
+		if(len(date_list)!=3):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE YEAR
+		year=date_list[0]
+		if len(year)!=4:
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+		month=date_list[1]
+
+		if len(month)==2 and month[0]=="0":
+			month=month[1]
+
+		if month not in month_list:
+			print("TRY AGAIN,", end=" ")
+			continue
+	
+		# GET THE DAY
+		day=date_list[2]
+		
+		if len(day)==2 and day[0]=="0":
+			day=day[1]
+
+		day=int(day)
+		if day>31 and day<=0:
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# Validate the date the user entered
+		date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+
+		if(datetime.datetime.now()>=date):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		break
+
+
+	#Get the end date
+	print("\n\n")
+	while True:
+		end_date= input("ENTER END DATE (FORMAT YYYY-MM-DD): ")
+		if (end_date=="q" or end_date=="Q"):
+			logout()
+		
+		date_list= end_date.split("-")  
+		if(len(date_list)!=3):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE YEAR
+		year=date_list[0]
+		if len(year)!=4:
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+		month=date_list[1]
+
+		if len(month)==2 and month[0]=="0":
+			month=month[1]
+
+		if month not in month_list:
+			print("TRY AGAIN,", end=" ")
+			continue
+	
+		# GET THE DAY
+		day=date_list[2]
+
+		if len(day)==2 and day[0]=="0":
+			day=day[1]
+			
+		day=int(day)
+		if day>31 and day<=0:
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# Validate the date the user entered
+		end_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+		
+		start_list= start_date.split("-")  
+		start_d= datetime.datetime.strptime(start_list[0]+'-'+start_list[1]+'-'+start_list[2], '%Y-%m-%d')
+
+		if(start_d>=end_date):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		break
+
+
+	#make sure customer name is not null
+	while True:
+		customer_name = input('ENTER A CUSTOMER NAME: ')
+		if len(customer_name) == 0:
+			continue
+		break
+
+
+	#make sure customer type is one of the types that we have
+	while True:
+		print('SELECT ONE OF THE FOLLOWING CUSTOMER TYPES:')
+		print
+		print('1.COMMERCIALl\n2.INDUSTRIAL\n3.MUNICIPAL\n4.RESIDENTIAL')
+		print
+		customer_type = input('ENTER 1,2,3,or 4: ')
+
+		if customer_type == '1':
+			Type = 'commercial'
 			break
-		'''
-			date_list= date.split("-")  
-			if(len(date_list)!=3):
-				print('L')
+
+		elif customer_type == '2':
+			Type = 'industrial'
+			break
+
+		elif  customer_type== '3':
+			Type=='municipal'
+			break
+
+		elif customer_type == '4':
+			Type = 'residential'
+			break
+
+		else:
+			continue
+		break
+
+	#make contact info is correct fix in class
+	while True:
+		contact_info = input('ENTER CUSTOMER CONTACT INFO (FORMAT 000-000-0000): ')
+		#ohone_list 
+		phone_list=['0','1','2','3','4','5','6','7','8','9','10','11','12']
+		if len(contact_info) != 12:
 				continue
+		break
 
-			# GET THE YEAR
-			year=date_list[0]
-			if len(year) != 4:
-				print('o')
-				continue
+	#make sure user enters a total amount
+	while True:
+		total_amount = input('Enter a total amount: ')
+		if len(total_amount)==0:
+			continue
+		break
+	
+	# now create a new customer account with the manager id
+	cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(Type,),str(start_date,),str(end_date,),str(total_amount,)))
+	connection.commit()
+	time.sleep(0.2)
+	print('.....')
+	print('Created a new customer account!\n')
+	print
 
-			# GET THE MONTH
-			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
-			month=date_list[1]
-			if month not in month_list:
-				print('V')
-				continue
-
-			# GET THE DAY
-			day=date_list[2]
-			if day>31 and day<=0:
-				print('E')
-				continue
-
-
-			#Check to make sure that the start date> todays date
-
-			end_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
-
-			if(datetime.datetime.now()>date):
-				print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
-				continue
-				'''
+	#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
+	print('Would you like to create a service agreement for this customer?')
+	create_sa = input('Enter Y for Yes or N for No: ')
+	#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
+	if (create_sa == 'N' or create_sa =='n'):
+		print
+		print('Would you like to create a service agreement for any other customers?')
+		sa = input('Enter Y for Yes or N for No: ')
+		#if yes we add a service agreement to the another customer 
+		if (sa == 'Y' or sa == 'y'):
+			account_managerQ3(username);
+		elif(sa == 'N' or sa =='n'):
+			option = input('Enter q to logout or h to return back to homepage: ')
+			if(option == 'H' or option == 'h'):
+				account_manager(username)
+			elif(option == 'q' or option == 'Q'):
+				logout()
 			
 
+	#if user chooses to create a service agreement for the newly added customer
+	elif (create_sa == 'Y' or create_sa =='y'):
+		#select all the service numbers that we have 
+		location = input('Enter a location: ')
+		waste_type = input('Enter a waste_type: ')
+		pick_up_schedule = input('Enter a pick up schedule: ')
+		local_contact = input('Enter a local contact: ')
+		internal_cost = input('Enter the internal cost: ')
+		price = input('Enter a price: ')
+		master_account = account_no
 
-		#make sure customer name is not null
-		while True:
-			customer_name = input('ENTER A CUSTOMER NAME: ')
-			if len(customer_name) == 0:
-				continue
-			break
+		#check if inputed customer info is valid 
+		#randomly select a service number 
+		service_no = random.randint(0,100)
+		cursor.execute('SELECT service_no FROM service_agreements')
+		badSA = cursor.fetchall()
+		#if randomly selected service number is in use randomly select another one 
+		for i in badSA:
+			while (i == service_no):
+				service_no = random.randint(0,100)
+				return service_no
 
+		#create the service agreement
+		cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
 
-		#make sure customer type is one of the types that we have
-		while True:
-			print('SELECT ONE OF THE FOLLOWING CUSTOMER TYPES:')
-			print
-			print('1.COMMERCIALl\n2.INDUSTRIAL\n3.MUNICIPAL\n4.RESIDENTIAL')
-			print
-			customer_type = input('ENTER 1,2,3,or 4: ')
-
-			if customer_type == '1':
-				Type = 'commercial'
-				break
-
-			elif customer_type == '2':
-				Type = 'industrial'
-				break
-
-			elif  customer_type== '3':
-				Type=='municipal'
-				break
-
-			elif customer_type == '4':
-				Type = 'residential'
-				break
-
-			else:
-				continue
-			break
-
-		#make contact info is correct fix in class
-		while True:
-			contact_info = input('ENTER CUSTOMER CONTACT INFO (FORMAT 000-000-0000): ')
-			#ohone_list 
-			phone_list=['0','1','2','3','4','5','6','7','8','9','10','11','12']
-			if len(contact_info) != 12:
-					continue
-			break
-
-		#make sure user enters a total amount
-		while True:
-			total_amount = input('Enter a total amount: ')
-			if len(total_amount)==0:
-				continue
-			break
-		
-		# now create a new customer account with the manager id
-		cursor.execute('INSERT INTO accounts VALUES (?,?,?,?,?,?,?,?);', (str(account_no,),str(mid),str(customer_name,),str(contact_info,),str(Type,),str(start_date,),str(end_date,),str(total_amount,)))
-		connection.commit()
 		time.sleep(0.2)
-		print('.....')
-		print('Created a new customer account!\n')
+		print ('..........')
+		print('\nService Agreement Created!')
+
+		#user chooses to return to home or logout
 		print
+		print
+		option = input("Enter q to exist or h to return back to the homepage")
 
-		#ask user if they want to add a service agreement to either an existing customer or a customer already int he database
-		print('Would you like to create a service agreement for this customer?')
-		create_sa = input('Enter Y for Yes or N for No: ')
-		#if account manager does not want to add a service agreement to a new customer we ask if they would like to add one for any other customers they manage
-		if (create_sa == 'N' or create_sa =='n'):
-			print
-			print('Would you like to create a service agreement for any other customers?')
-			sa = input('Enter Y for Yes or N for No: ')
-			#if yes we add a service agreement to the another customer 
-			if (sa == 'Y' or sa == 'y'):
-				account_managerQ3(username);
-			elif(sa == 'N' or sa =='n'):
-				option = input('Enter q to logout or h to return back to homepage: ')
-				if(option == 'H' or option == 'h'):
-					account_manager(username)
-				elif(option == 'q' or option == 'Q'):
-					logout()
-				
-
-		#if user chooses to create a service agreement for the newly added customer
-		elif (create_sa == 'Y' or create_sa =='y'):
-			#select all the service numbers that we have 
-			location = input('Enter a location: ')
-			waste_type = input('Enter a waste_type: ')
-			pick_up_schedule = input('Enter a pick up schedule: ')
-			local_contact = input('Enter a local contact: ')
-			internal_cost = input('Enter the internal cost: ')
-			price = input('Enter a price: ')
-			master_account = account_no
-
-			#check if inputed customer info is valid 
-			#randomly select a service number 
-			service_no = random.randint(0,100)
-			cursor.execute('SELECT service_no FROM service_agreements')
-			badSA = cursor.fetchall()
-			#if randomly selected service number is in use randomly select another one 
-			for i in badSA:
-				while (i == service_no):
-					service_no = random.randint(0,100)
-					return service_no
-
-			#create the service agreement
-			cursor.execute('INSERT INTO service_agreements VALUES(?,?,?,?,?,?,?,?)',(str(service_no,),str(master_account,),str(location,),str(waste_type,),str(pick_up_schedule,),str(local_contact,),str(internal_cost,),str(price,)))
-
-			time.sleep(0.2)
-			print ('..........')
-			print('\nService Agreement Created!')
-
-			#user chooses to return to home or logout
-			print
-			print
-			option = input("Enter q to exist or h to return back to the homepage")
-
-			if (option == 'q' or option == 'Q'):
-				logout()
-			elif (option == 'h' or option == 'H'):
-				account_manager()
+		if (option == 'q' or option == 'Q'):
+			logout()
+		elif (option == 'h' or option == 'H'):
+			account_manager()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------QUESTION 3----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1039,10 +1066,6 @@ def summary_account_manager(supervisor_pid):
 
 
 
-
-
-
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------DRIVER FUNCTIONALITY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1053,92 +1076,140 @@ def summary_account_manager(supervisor_pid):
 # The waste_type involved in the service agreement.
 # The container ID of the container to be dropped off.
 # The container ID of the container to be picked up.
-def driver():
+def driver(username):
 	global connection, cursor
 
-	print("\n"*40)
+	print("\n"*55)
 	print("-------------------------------------------------------------")
 	print("WELCOME DRIVER!!")
 	print("-------------------------------------------------------------")
 	print('Enter q to exit!')
 
-	print("\n\n")
-
 	#Get the start date
+	print("\n\n")
 	while True:
 		start_date= input("ENTER START DATE (FORMAT YYYY-MM-DD): ")
 		if (start_date=="q" or start_date=="Q"):
-				logout()
+			logout()
+		
+		date_list= start_date.split("-")  
+		if(len(date_list)!=3):
+			print("TRY AGAIN,", end=" ")
+			continue
 
 		# GET THE YEAR
-		date_list= start_date.split("-")  
 		year=date_list[0]
-		if len(year)==4:
-
-			break
-		else:
+		if len(year)!=4:
+			print("TRY AGAIN,", end=" ")
 			continue
 
 		# GET THE MONTH
 		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
 		month=date_list[1]
-		if month in month_list:
-			break
-		else:
+
+		if len(month)==2 and month[0]=="0":
+			month=month[1]
+
+		if month not in month_list:
+			print("TRY AGAIN,", end=" ")
 			continue
 	
 		# GET THE DAY
 		day=date_list[2]
-		if day<=31 and day>0:
-			break
-		else:
+		
+		if len(day)==2 and day[0]=="0":
+			day=day[1]
+
+		day=int(day)
+		if day>31 and day<=0:
+			print("TRY AGAIN,", end=" ")
 			continue
+
+		# Validate the date the user entered
+		date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+
+		if(datetime.datetime.now()>=date):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		break
 
 
 	#Get the end date
+	print("\n\n")
 	while True:
 		end_date= input("ENTER END DATE (FORMAT YYYY-MM-DD): ")
-
 		if (end_date=="q" or end_date=="Q"):
-				logout()
+			logout()
+		
+		date_list= end_date.split("-")  
+		if(len(date_list)!=3):
+			print("TRY AGAIN,", end=" ")
+			continue
 
 		# GET THE YEAR
-		date_list= end_date.split("-")  
 		year=date_list[0]
-		if len(year)==4:
-			break
-		else:
+		if len(year)!=4:
+			print("TRY AGAIN,", end=" ")
 			continue
 
 		# GET THE MONTH
 		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
 		month=date_list[1]
-		if month in month_list:
-			break
-		else:
+
+		if len(month)==2 and month[0]=="0":
+			month=month[1]
+
+		if month not in month_list:
+			print("TRY AGAIN,", end=" ")
 			continue
 	
 		# GET THE DAY
 		day=date_list[2]
-		if day<=31 and day>0:
-			break
-		else:
+
+		if len(day)==2 and day[0]=="0":
+			day=day[1]
+			
+		day=int(day)
+		if day>31 and day<=0:
+			print("TRY AGAIN,", end=" ")
 			continue
 
-	t=(start_date, end_date)
+		# Validate the date the user entered
+		end_date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
+		
+		start_list= start_date.split("-")  
+		start_d= datetime.datetime.strptime(start_list[0]+'-'+start_list[1]+'-'+start_list[2], '%Y-%m-%d')
+
+		if(start_d>=end_date):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		break
+
+	cursor.execute('''
+		select user_id
+		from users
+		where login=?''', username)
+	connection.commit()
+	uid=cursor.fetchone()[0]
+	print(uid)
+
+
+	t=(start_date, end_date, uid)
 	cursor.execute('''
 		SELECT sa.location, sa.local_contact, sa.waste_type, s.cid_drop_off, s.cid_pick_up  
 		from service_agreements sa, service_fulfillments s
 		where sa.master_account=s.master_account
 		and s.service_no=sa.service_no
 		and s.date_time>=? 
-		and s.date_time=<?''', t)
+		and s.date_time<=?
+		and s.driver_id=?''', t)
 	connection.commit()
 	rows=cursor.fetchall()
 
 	# Display Tours formatted
-	print()
-	print()
+	print("\n\n\n")
 	print("INFORMATION ABOUT THE TOUR CONSISTS OF THE FOLLOWING: ")
 	values=["LOCATION", "LOCAL CONTACT", "WASTE TYPE", "DROP OFF CONTAINER ID ", "PICK UP CONTAINER ID"]
 	string="%10s|%10s|%10s|%10s|%10s"%(values[0].ljust(20), values[1].ljust(20), values[2].ljust(20), values[3].ljust(20), values[4].ljust(40))
@@ -1146,22 +1217,27 @@ def driver():
 	print("--"*80)
 	service_no_list=[]
 
-	for value in rows:
-		value=list(value)
-		service_no_list.append(value[0])
-		formatted_string="%10s|%10s|%10s|%10s|%10s" %(value[0].ljust(20), value[1].ljust(20), value[2].ljust(20), value[3].ljust(20), value[4].ljust(40))
-		print(formatted_string)
-		print()
+	if(rows==[]):
+		print("NONE")
+		
+	else:
+		for value in rows:
+			value=list(value)
+			service_no_list.append(value[0])
+			formatted_string="%10s|%10s|%10s|%10s|%10s" %(value[0].ljust(20), value[1].ljust(20), value[2].ljust(20), value[3].ljust(20), value[4].ljust(40))
+			print(formatted_string)
+
+	# CONTINUE??
+	print()
+	print("DO YOU WANT TO CONTINUE?")
+	decision= input("ENTER q TO EXIT or ANYTHING ELSE TO CONTINUE: ")
+	
+	if (decision=="q" or decision=="Q"):
+		logout()
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1170,17 +1246,18 @@ def driver():
 def dispatcher():
 	global connection, cursor
 
-	print("\n"*40)
+	print("\n"*55)
+
 	print("-------------------------------------------------------------")
 	print("WELCOME DISPATCHER!!")
 	print("-------------------------------------------------------------")
 	print('Enter q to exit!')
 
-	print("\n\n")
-
+	
 	# Select a service_agreement, driver, truck, and a container to be dropped off and picked up
 	
 	# Select a service no for a particular service agreement
+	
 	service_no= Dispatcher_getService_no()
 
 	# Find master account
@@ -1194,6 +1271,7 @@ def dispatcher():
 	master_account=row[0]
 
 	# Select a driver
+
 	driver= Dispatcher_getDriver()
 
 	# Select a truck depending on if the driver owns a truck, if they do then automatically truck is set
@@ -1205,8 +1283,6 @@ def dispatcher():
 
 	# Select the container being dropped off
 	cid_drop_off= Dispatcher_getDropOff(service_no)
-	print()
-	print()
 
 	# Set the date
 	date=setDate()
@@ -1214,7 +1290,13 @@ def dispatcher():
 	# Create entries in the table service_fulfillments for upcoming days
 	add_service_fulliment(date, master_account, service_no, truck, driver, cid_drop_off, cid_pick_up)
 
+	# CONTINUE??
+	print()
+	print("DO YOU WANT TO CONTINUE?")
+	decision= input("ENTER q TO EXIT ANYTHING ELSE TO CONTINUE: ")
 
+	if (decision=="q" or decision=="Q"):
+		logout()
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------ADD TO SERVICE FULFILLMENT TABLE------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1222,7 +1304,6 @@ def dispatcher():
 # Add the entry to the service_fulliment table with the following data
 def add_service_fulliment(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up):
 	global connection, cursor
-
 	cursor.execute('''
 		INSERT INTO service_fulfillments VALUES(?,?,?,?,?,?,?)''',(date_time, master_account, service_no, truck_id, driver_id, cid_drop_off, cid_pick_up) )
 	connection.commit()
@@ -1244,13 +1325,14 @@ def Dispatcher_getService_no():
 	rows=cursor.fetchall()
 	
 	# Allow dispatcher to choose from it
-	print()
+	print("\n\n")
 	print("SELECT ONE SERVICE NO FROM THE FOLLOWING SERVICE AGREEMENTS:")
 	
+
 	values=["SERVICE NO", "MASTER ACCOUNT", "LOCATION", "WASTE TYPE",  "PICK UP SCHEDULE",  "LOCAL CONTACT", "INTERNAL COST",  "PRICE"]
 	string="%10s|%10s|%10s|%10s|%10s|%10s|%10s|%10s"%(values[0].ljust(20), values[1].ljust(20), values[2].ljust(20), values[3].ljust(20), values[4].ljust(40), values[5].ljust(20), values[6].ljust(20), values[7].ljust(20))
 	print(string)
-	print("--"*80)
+	print("--"*100)
 
 	service_no_list=[]
 	for value in rows:
@@ -1266,6 +1348,7 @@ def Dispatcher_getService_no():
 		if (service_no=="q" or service_no=="Q"):
 			logout()
 		if(service_no not in service_no_list):
+			print("TRY AGAIN,", end=" ")
 			continue
 		else:
 			break
@@ -1273,9 +1356,13 @@ def Dispatcher_getService_no():
 	# Return the service no choosen from the dispatcher
 	return service_no
 
-# Select the driver to fulfill a task
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------GET THE DRIVER------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Get the service Agreement
 def Dispatcher_getDriver():
 	global connection, cursor
+
 	# Select all the drivers
 	cursor.execute('''
 		select distinct p.pid, p.name
@@ -1285,8 +1372,11 @@ def Dispatcher_getDriver():
 	connection.commit()
 	# Dispatcher can choose from it
 	rows=cursor.fetchall()
-	print()
+
+	print("\n\n")
 	print("SELECT ONE DRIVER FROM THE FOLLOWING DRIVERS: ")
+	
+
 	print("DRIVER ID \t     DRIVER NAME")
 	print("---"*20)
 
@@ -1302,6 +1392,7 @@ def Dispatcher_getDriver():
 		if (driver=="q" or driver=="Q"):
 			logout()
 		if(driver not in drivers_list):
+			print("TRY AGAIN,", end=" ")
 			continue
 		else:
 			break
@@ -1315,7 +1406,7 @@ def Dispatcher_getDriver():
 # otherwise the dispatcher also must select a truck.
 def Dispatcher_getTruck(driver):
 	global connection, cursor
-
+	
 	# SEARCH TO SEE IF THE DRIVER HAS A TRUCK OR NOT
 	cursor.execute('''
 		select distinct owned_truck_id
@@ -1343,8 +1434,9 @@ def Dispatcher_getTruck(driver):
 		connection.commit()
 		trucks=cursor.fetchall()
 			
-		print()
+		print("\n\n")
 		print("SELECT A TRUCK FROM THE FOLLOWING TRUCKS: ")
+	
 		print("TRUCK ID \t     MODEL")
 		print("---"*20)
 
@@ -1363,6 +1455,7 @@ def Dispatcher_getTruck(driver):
 				logout()
 
 			if(truck not in truck_list):
+				print("TRY AGAIN,", end=" ")
 				continue
 			else:
 				break
@@ -1455,8 +1548,9 @@ def Dispatcher_getDropOff(service_no):
 	rows=cursor.fetchall()
 
 	# Display the containers to the dispatcher
-	print()
+	print("\n\n")
 	print("SELECT ONE CONTAINER FROM THE FOLLOWING CONTAINERS: ")
+	
 	print("CONTAINER ID ")
 	print("--"*10)
 
@@ -1473,71 +1567,75 @@ def Dispatcher_getDropOff(service_no):
 		if (container=="q" or container=="Q"):
 			logout()
 		if(container not in container_list):
+			print("TRY AGAIN,", end=" ")
 			continue
 		else:
 			break
 	# Return the container being dropped off
 	return container
 
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------Question 4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Set the date for a particular entry
 def setDate():
-
-	date_array=[]
-	print("ENTER DATE (FORMAT YYYY-MM-DD): ")
-
+	
 	date_list=[]
 
+
+	print("\n\n")
 	while True:
-
-		while True:
-			date= input("ENTER DATE (FORMAT YYYY-MM-DD): ")
-			if (date=="q" or date=="Q"):
-				logout()
-			# GET THE YEAR
-			date_list= date.split("-")  
-			year=date_list[0]
-			if len(year)==4:
-
-				break
-			else:
-				continue
-
-			# GET THE MONTH
-			month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
-			month=date_list[1]
-			if month in month_list:
-				break
-			else:
-				continue
+		date= input("ENTER DATE (FORMAT YYYY-MM-DD): ")
+		if (date=="q" or date=="Q"):
+			logout()
 		
-			# GET THE DAY
-			day=date_list[2]
-			if day<=31 and day>0:
-				break
-			else:
-				continue
+		date_list= date.split("-")  
+		if(len(date_list)!=3):
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE YEAR
+		year=date_list[0]
+		if len(year)!=4:
+			print("TRY AGAIN,", end=" ")
+			continue
+
+		# GET THE MONTH
+		month_list=['1','2','3','4','5','6','7','8','9','10','11','12']
+
+		month=date_list[1]
+		if len(month)==2 and month[0]=="0":
+			month=month[1]
+
+		if month not in month_list:
+			print("TRY AGAIN,", end=" ")
+			continue
+	
+		# GET THE DAY
+		day=date_list[2]
+
+		if len(day)==2 and day[0]=="0":
+			day=day[1]
+			
+		day=int(day)
+		if day>31 and day<=0:
+			print("TRY AGAIN,", end=" ")
+			continue
 
 		# Validate the date the user entered
 		date= datetime.datetime.strptime(date_list[0]+'-'+date_list[1]+'-'+date_list[2], '%Y-%m-%d')
 
-		if(datetime.datetime.now()<date):
-			break
-		else:
-			print("TRY AGAIN (DATE HAS PASSED), ", end=" ")
+		if(datetime.datetime.now()>=date):
+			print("TRY AGAIN,", end=" ")
 			continue
+
+		break
 
 	# return the date
 	return date
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
 
@@ -1579,7 +1677,7 @@ def Role_GateKeeper(role, username):
 		dispatcher()
 			
 	else:
-		driver()
+		driver(username)
 			
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1590,7 +1688,6 @@ def Role_GateKeeper(role, username):
 def start(username):
 	print()
 	while True:
-		print('Enter q to exit when Prompted to enter data!!!')
 		role = find_role(username)
 		Role_GateKeeper(role, username)
 
@@ -1642,15 +1739,17 @@ def encrypt_password(password):
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Allows user to log in succesfully with previous username and previous password
 def login():
-	print("\n"*40)
+	print("\n"*55)
 	print("-------------------------------------------------------------")
 	print("LOGIN PAGE:")
 	print("-------------------------------------------------------------")
-	print('Enter q to exit!')
+	print('ENTER q to EXIT!')
+	
 
 	count=0
 	while count<3:
 		print("ATTEMPTS REMAINING: %d" % (3-count) )
+		print()
 		# If user has logged out we dont have to login
 		if logout == True:
 			break
@@ -1671,7 +1770,7 @@ def login():
 
 		print ('\n')
 		print ('Authenticating............')
-		time.sleep(0.3)
+		time.sleep(0.5)
 
 		# If hashed password is the same as the hashed database password then login is successful
 		status = Authenticate(psw,username)
@@ -1684,6 +1783,7 @@ def login():
 			start(username)
 
 			
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #------------------------------------GET ROLE FUNCTION FOR CREATING AN ACCOUNT-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1740,12 +1840,12 @@ def get_role(pid):
 def create_account():
 	global cursor, connection
 
-	print("\n"*40)
+	print("\n"*55)
 	print("-------------------------------------------------------------")
 	print("CREATE ACCOUNT PAGE:")
 	print("-------------------------------------------------------------")
-	print('Enter q to exit!')
-
+	print('ENTER q TO EXIT!')
+	
 	# PID
 	# Make sure that pid is in personnel
 	while True:
@@ -1765,7 +1865,6 @@ def create_account():
 			print("\nPERSONNEL IDENTIFICATION NUMBER IS NOT IN THE SYSTEM!")
 			continue
 		
-
 		# Account already created
 		cursor.execute('''
 			select *
@@ -1777,10 +1876,7 @@ def create_account():
 		if row!=[]:
 			print("\nPID ALREADY HAS A ACCOUNT!")
 			continue
-	
 		break
-
-	
 
 	# USERNAME
 	# Make sure the username is unique
@@ -1792,6 +1888,7 @@ def create_account():
 			select *
 			from users
 			where login=?''', (username,))
+		connection.commit()
 		row=cursor.fetchall()
 
 		if row!=[]:
@@ -1800,11 +1897,11 @@ def create_account():
 		
 		break
 
-
 	# PASSWORD
 	password = input('Please enter a password: ')
 	if (password=="q" or password=="Q"):
 		logout()
+
 	encrypt_pass = encrypt_password(password)
 
 	# ROLE
@@ -1821,15 +1918,16 @@ def create_account():
 	login()
 
 
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #------------------------------------LOGOUT FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # CALLS TO END PROGRAM
 def logout():
-	print()
+	print("\n"*55)
 	print("Goodbye!")
+	print()
 	exit(0)
+
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #------------------------------------MAIN FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1847,21 +1945,20 @@ def main():
 	# Loop to login to the system 
 	add_data()
 
-
-	print("\n"*40)
+	print("\n"*55)
 	print("Welcome!")
 	decision= input('PRESS L TO LOGIN IN, OR PRESS C TO CREATE AN ACCOUNT: ')
-	
-	if decision == 'C' or decision== 'c':
-			create_account()
+
+	if (decision=="q" or decision=="Q"):
+		logout()
+
+	elif decision == 'C' or decision== 'c':
+		create_account()
 	
 	elif decision == 'L' or  decision=='l':
 		login()
 
 	print()
-	print()
-	print("GoodBye")
-	
 main()
 	
 
