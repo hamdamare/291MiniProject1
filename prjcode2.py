@@ -164,15 +164,64 @@ def bcnf_initial():
 
 #normalizing the table selected 
 def bcnf(choice):
+    global connection, cursor
     print('Normalizing table',choice)
-    time.sleep(5);
+    print("\n"*10)
+    cursor.execute('SELECT FDs FROM inputRelationSchemas WHERE Name = ?',(choice,))
+    fd = cursor.fetchone()
 
-    #normalize the table 
+     #first we find our keys
+    find_key(fd)
+
+def find_key(fd):
+    fd_A = []
+    list_nums= fd[0].split(";")
+    for i in list(list_nums)[:]:
+        print(i)
+        fd_A.append(i)
+
+    print(fd_A)
+
+
+   
+
+
+'''#all attributes that show up only on the lefthand side
+    L = []
+
+    #all attributes that show up on both the middle and the left hand side
+    M = []
+
+    # all attribye that shows up on both the middle and the left hand side
+    R = []
+
+    #contains all attributes on the right hand side of our fd
+    fd_R = []
+
+    #contains all attributes on the left hand side of our fd
+    fd_L =[]
+
+    fd_A = []
+    fd_A.append(fd[0])
+    for i in fd_A:
+        print(i.split())
+'''
+
+
+        
+
+
+
+   
 
 
 
 
-    print('Table Normalized!')
+    #then we find our functional dependencies that violate bcnf
+    #then we decompose them
+
+
+
 
 
 #checks to see if s given table is dependency preserving after normalization
