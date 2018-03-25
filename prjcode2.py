@@ -121,6 +121,73 @@ def equivalence():
 
 
 
+#validates the table the user selects to be normalized
+def bcnf_initial():
+    global connection, cursor
+   # GET THE NAMES OF EACH TABLE
+    cursor.execute('''
+        select * from inputRelationSchemas; ''')
+    connection.commit()
+    nums = cursor.fetchall()
+    names = []
+    for num in nums:
+        names.append(num[0])
+
+
+    print("\n"*60)
+    print("BCNF NORMALIZATION ")
+    print("---" * 50)
+    print()
+    bcnf_names = []
+
+
+    # GET NAMES
+    print("SELECT ONE OR MORE SCHEMAS FROM THE TABLE InputRelationSchemas AS THE TABLE TO BE NORMALIZED")
+    print("---" * 50)
+    # PRINT THE TABLES
+    printTables()
+    print(names)
+    # VALIDATE CHOICES
+    while True:
+        choice = input("ENTER NAME OR ENTER 'D' or 'd' WHEN DONE: ")
+        print(choice)
+        if (choice == "d" or choice == "D"):
+            break
+        
+        elif choice in names and choice not in bcnf_names:
+            bcnf_names.append(choice)
+            bcnf(choice)
+
+        else:
+            print("TRY AGAIN,", end=" ")
+
+
+#normalizing the table selected 
+def bcnf(choice):
+    print('Normalizing table',choice)
+    time.sleep(5);
+
+    #normalize the table 
+
+
+
+
+    print('Table Normalized!')
+
+
+#checks to see if s given table is dependency preserving after normalization
+def dependency_preserving():
+    if True:
+        print("Dependecy preserving")
+    else:
+        print("Not dependency preserving")
+
+
+
+
+ 
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #------------------------------------PRINT TABLES FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +253,9 @@ def main():
             logout()
         # GO TO BCNF FUNCTION
         elif(decision == "1"):
-            bcnf()
+            bcnf_initial()
+            break
+
         # GO TO CLOSOURE FUNCTION
         elif(decision == "2"):
             closure()
