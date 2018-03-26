@@ -147,17 +147,18 @@ def bcnf_initial():
     # PRINT THE TABLES
     printTables()
     print(names)
-    # VALIDATE CHOICES
+   
     while True:
+         # VALIDATE CHOICES
         choice = input("ENTER NAME OR ENTER 'D' or 'd' WHEN DONE: ")
         print(choice)
         if (choice == "d" or choice == "D"):
             break
-        
+
         elif choice in names and choice not in bcnf_names:
             bcnf_names.append(choice)
             bcnf(choice)
-
+            
         else:
             print("TRY AGAIN,", end=" ")
 
@@ -170,20 +171,50 @@ def bcnf(choice):
     cursor.execute('SELECT FDs FROM inputRelationSchemas WHERE Name = ?',(choice,))
     fd = cursor.fetchone()
 
+    cursor.execute('SELECT Attributes FROM inputRelationSchemas WHERE Name = ?',(choice,))
+    attributes = cursor.fetchone()
      #first we find our keys
-    find_key(fd)
+    find_key(fd,attributes)
 
-def find_key(fd):
-    fd_A = []
+def find_key(fd,attributes):
+    fd_x = []
+    fd_y=[]
     list_nums= fd[0].split(";")
     for i in list(list_nums)[:]:
-        print(i)
-        fd_A.append(i)
+        new_list=i.split("=>")
+        fd_x.append(new_list[0])
+        fd_y.append(new_list[1])
 
-    print(fd_A)
+
+    #Grab characters only
+    x=[]
+    for i in fd_x:
+        name=""
+        for j in i:
+            if(j!="{" and j!="}" and j!="," and j!=" "):
+                name=name+j
+        x.append(name)
+
+    y=[]
+    for i in fd_y:
+        name=""
+        for j in i:
+            if(j!="{" and j!="}" and j!="," and j!=" "):
+                name=name+j
+        y.append(name)
 
 
-   
+    for i in range(len(x)):
+        a=[]
+        a.append(x[i])
+        a.append(y[i])
+        for j in range(i+1, len(x)):
+            for k in a:
+                if (k==x[j]):
+                    a.append(y[i])
+        print(a)
+
+
 
 
 '''#all attributes that show up only on the lefthand side
@@ -275,7 +306,7 @@ def main():
     if filename == "Q" or filename == 'q':
         logout()
 
-    #filename = "test.sqliteDB"
+    filename = "test.sqliteDB"
     
     # Initialized the path to the database
     connection = sqlite3.connect("./" + filename)
