@@ -296,7 +296,7 @@ def bcnf_initial():
     global connection, cursor
    # GET THE NAMES OF EACH TABLE
     cursor.execute('''
-        select * from inputRelationSchemas; ''')
+        SELECT * from inputRelationSchemas; ''')
     connection.commit()
     nums = cursor.fetchall()
     names = []
@@ -420,7 +420,7 @@ def bcnf_table(choice):
         if i[0] not in candidate_keys:
             violation = i
             if violation != []:
-                bcnf(violation,candidate_keys,R)
+                bcnf(violation,candidate_keys,R,choice)
             
 
 def getAttr(schema_attributes): 
@@ -449,7 +449,8 @@ def getAttr(schema_attributes):
 
 
 #decompose the functional dependencies that violate bcnf
-def bcnf(violation,candidate_keys,R):
+def bcnf(violation,candidate_keys,R,choice):
+    global cursor,connection
     S2 = R
     R_strings = []
     table_S2 = [] 
@@ -583,12 +584,23 @@ def bcnf(violation,candidate_keys,R):
     print("-----------------------------------Relations----------------------------------------")
     print("SCHEMA 1:   ATTRIBUTES: "+ s1_attr+ "\t\tFUNCTIONAL DEPENDENCIES: ", end= " ")
     for i in outputs_1:
-        if(outputs_1.index(i)== len(outputs_1)-1 ):
+        if(outputs_1.index(i) == len(outputs_1)-1 ):
             print(i)
         else:
             print(i, end=", ")
 
 
+
+    #Adding the output to the output table:
+    fd_s1 = outputs_1
+    att_s1 = s1_attr
+    fd_s2 = outputs_2
+    att_s2 = s2_string_attr
+    Name = choice
+    cursor.execute('''INSERT OR REPLACE INTO OutputRelationSchemas(Name,Attributes,FDs) VALUES(?,?,?)''',(str(Name,),str(fd_s1+fd_s2,),str(att_s2+att_s1,)))
+    connection.commit()
+
+    #printing the output to the user
     print()
     print("SCHEMA 2:   ATTRIBUTES: "+ s2_string_attr+ "\t\tFUNCTIONAL DEPENDENCIES: ", end= " ")
     if(len(outputs_2)==0):
@@ -637,8 +649,6 @@ def dependency_preserving(table_S1,table_S2,s2_attribute,R):
             for x in j:
                 R_attributes.append(x)
            
-
-    
 
     #calculate the closure for s1
     for FD in table_S1:
@@ -763,6 +773,8 @@ def dependency_preserving(table_S1,table_S2,s2_attribute,R):
         print()
         print("THE RELATIONS IS NOT DEPENDENCY PRESERVING")
         print("------------------------------------------------------------------------------------")
+
+
 
 
 def closure_BCNF(attribute, left_list, right_list):
