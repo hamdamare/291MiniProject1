@@ -229,6 +229,7 @@ class equivalence:
             print("THE TWO SETS OF FDs F1 AND F2 ARE EQUIVALENT.")
         else:
             print("THE TWO SETS OF FDs F1 AND F2 ARE NOT EQUIVALENT.")
+        decision()
     
 
      # GET THE FDs FOR a list of table names (Returns list )
@@ -285,6 +286,10 @@ class equivalence:
 
 
 
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------BCNF-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 #validates the table the user selects to be normalized
 def bcnf_initial():
@@ -308,19 +313,18 @@ def bcnf_initial():
     print("---" * 50)
     # PRINT THE TABLES
     printTables()
-
     while True:
-         # VALIDATE CHOICES
-        choice = input("ENTER NAME OR ENTER Q TO QUIT: ")
+        # VALIDATE CHOICES
+        choice = input("ENTER NAME OF TABLE: ")
 
-        if (choice == "q" or choice == "Q"):
-            logout()
+        if choice not in names:
+            print("TRY AGAIN, ", end=" ")
 
-        elif choice in names:
-            bcnf_table(choice)
-            
         else:
-            print("TRY AGAIN,", end=" ")
+            break
+
+    bcnf_table(choice)
+    decision()
 
 
 #grab our functional dependecies and attributes from the table
@@ -392,15 +396,9 @@ def bcnf_table(choice):
         r = list(zip(a[0::2],a[1::2]))
 
     for i in r:
-        if len(i[1]) > 1:
-            for j in i[1]:
-                v.append(i[0])
-                v.append(list(j))
-        else:
-            for k in i[1]:
-                w.append(i[0])
-                w.append(list(k))
-    
+            v.append(i[0])
+            v.append(list(i[1]))
+    w = []
     #singleton dependencies
     singles = v+w
 
@@ -415,23 +413,17 @@ def bcnf_table(choice):
     #these are the functional dependecies that violate bcnf
     fd_singleton = zip(singles[0::2],singles[1::2])
 
+
+
+    #each time we encounter a violation we call bcnf decomposition to decompose to bcnf
     for i in list(fd_singleton):
         if i[0] not in candidate_keys:
-            violation.append(i[0])
-            violation.append(i[1])
-        #need our candidate keys functional dependencies
+            violation = i
+            if violation != []:
+                bcnf(violation,candidate_keys,R)
+            
 
-    violations = list(zip(violation[0::2],violation[1::2]))
-
-    if violations == []:
-        print("TABLE IS ALREADY IN BCNF")
-        return 
-
-    else:
-        bcnf(violations,candidate_keys,R)
-
-
-def getAttr(schema_attributes):
+def getAttr(schema_attributes): 
     index=0
     str=""
     schema_attributes_set= set()
@@ -458,205 +450,319 @@ def getAttr(schema_attributes):
 
 #decompose the functional dependencies that violate bcnf
 def bcnf(violation,candidate_keys,R):
-
-    tables=[]
-
-    keys = []
-    fd_violations = []
-    violations_1 = []
-    a = []
+    S2 = R
+    R_strings = []
+    table_S2 = [] 
     r = []
-    v =[]
+
+
+    #Multi means we have multiple attributes on the rhs of our violation
+    #single contains all the attributes in single form that appear on the rhs of our violation
+    S_Multi = []
+    S_Single = []
+
+    #for formating our output for s2
+    outputs2 = []
+    output_s2 = []
+    s2_attribute = []
+
+    
+
+
+    #turn our lists of lists into a l ist of strings
+    #we append s1 to our table if its not already in the table and once s2 is 
+    #in bcnf we append that to the table as well
+    S1_violation = violation
+    for i in violation[1]:
+        S_Multi.append((i))
+
+    if len(violation[1])> 1:
+        for i in violation[1]:
+            S_Single.append(list(i))
+
+
+   #WE REMOVE ONLY THE ATTRIBUTES THAT APPEAR ON THE RHS OF THE FUNCTIONAL DEPENDENCY IN OUR VIOLATION RELATION
+   #FROM OUR S2 RELATION --> S2 CONTAINS THE ATTRIBUTES THAT DONT VIOLATE ALONG WITH THE ATTRUBUTES FROM THE LHS OF THE
+   #VIOLATION RELATION
+    for i in S2:
+        for j in i:
+            #if we have a multi attribute from our rhs violation in table remove it 
+            if j == S_Multi:
+                temp_list = list(i)
+                temp_list.remove(j)
+                index = S2.index(i)
+                S2[index] = temp_list
+                table_S2 = S2
+
+
+            else:
+                for k in j:
+                    k = list(k)
+                    if k == S_Multi:
+                        temp_list = list(i)
+                        temp_list.remove(j)
+                        index = S2.index(i)
+                        S2[index] = temp_list
+                        table_S2 = S2
+
+        
+            for x in S_Single:
+                if j == x:
+                    temp_list = list(i)
+                    temp_list.remove(j)
+                    index = S2.index(i)
+                    S2[index] = temp_list
+                    table_S2 = S2
+
+
+                else:
+                    table_S2 = S2
+
+
+
+    #here we append our s2 elements to output list for formating
+    #also we grab all our attributes
+    for i in table_S2:
+            output_s2.append(i)
+
+            for j in i:
+                for x in j:
+                    if x not in s2_attribute:
+                        s2_attribute.append(x)
+
+
+    #continue formating 
+    for i in output_s2:
+        if len(i) > 1:
+            i = i[0] + ["=>"] +i[1]
+            outputs2.append(i)
+
+
+
+    #Output fds 2
+    outputs_2=[]
+    for i in output_s2:
+        if len(i)> 1:
+            sorted(i[0])
+            sorted(i[1])
+            i = "_".join(i[0]) + "=>" +"_".join(i[1])
+            outputs_2.append(i)
+
+    # Outpuft attr 2
+    sorted(s2_attribute)
+    s2_string_attr= "_".join(s2_attribute)
+
+
+
+    #need this one to calc dependency pres
+    S_vio = violation
+    table_S1_closure = []
+    table_S1_closure.append(S_vio)
+
+    for i in S1_violation:
+        for x in i:
+            if x not in r:
+                r.append(x)
    
 
-    for x in violation:
-        print(x)
-    # if len(x[1]) == 1:
-    #     violations_1.append(x[1])
-    # else:
-    #     for j in x[1]:
-    #         violations_1.append(j)
+    # Outpuft attr 1
+    sorted(r)
+    s1_attr= "_".join(r)
+
+    #Output fds 2
+    outputs_1=[]
+
+    if len(S1_violation)> 1:
+        sorted(S1_violation[0])
+        sorted(S1_violation[1])
+        i = "_".join(S1_violation[0]) + "=>" +"_".join(S1_violation[1])
+        outputs_1.append(i)
 
 
-    # print(violations_1)
-    # for i in singles:
-    #     print(i)
-    #     if i in violations_1:
-    #         singles[singles.index(i)] = ''
-    # fd_singleton = list(zip(singles[0::2],singles[1::2]))
-
-    # print(fd_singleton)
-
-
-    # #check to see if our list of violations are in bcnf
-    # violations = list(zip(violation[0::2],violation[1::2]))
-    # attributes_v = []
-    # for i in violation:
-    #     if i not in attributes_v:
-    #         if len(i) == 1:
-    #             attributes_v.append(i)
-    #         else:
-    #             for j in i:
-    #                 attributes_v.append(j)
-
-    # for i in list(violations):
-    #     #find our candidate keys
-    #     if closure_BCNF(i[0],choice) == attributes_v:
-    #         if i[0] not in keys:
-    #             keys.append(i[0])
-
-    #     #if we have any fd's where the attribute on the lhs is not a key
-    #     #we add it to a list and will later decompose it 
-    #     if i[0] not in keys:
-    #         v.append(i[0])
-    #         v.append(i[1])
-    # #if we have violations we decompose our violations list
-    # if v != []:
-    #     bcnf_violations(v,singles)
-    # #else we print our normalized functional dependecies 
-    # else:
-    #     violations_v_1 = zip(violation[0::2],violation[1::2])
-    #     for i in list(violations_v_1):
-    #         if len(i[1]) == 1:
-    #             v.append(i[1])
-    #         else:
-    #             for j in i[1]:
-    #                 v.append(j)
-    #         if i not in fd_violations:
-    #             fd_violations.append(i)
-
-    #     print_outputFDs(fd_singleton,fd_violations)
-    #     dependency_preserving(singles,violation,R)
-
-
-def bcnf_violations(v,keys,singles,R):
-    violations_v_1 = zip(v[0::2],v[1::2])
-    violation_rhs = []
-
-    #get all the attributes on the rhs of our violating functional dependencies
-    for i in violation_v_1:
-        if i[1] not in violation_rhs:
-            violation_rhs.append(i[1])
-    v =[]
-    fd_violations = []
-    #while not bcnf:
-    for i in singles:
-        if i in violations_rhs:
-            singles[singles.index(i)] = ''
-    fd_singleton = zip(singles[0::2],singles[1::2])
-
-    for i in list(violations_v_1):
-        if len(i[1]) == 1:
-            v.append(i[1])
+    #outputting S1 and S2 for each Violation
+    print("-----------------------------------Relations----------------------------------------")
+    print("SCHEMA 1:   ATTRIBUTES: "+ s1_attr+ "\t\tFUNCTIONAL DEPENDENCIES: ", end= " ")
+    for i in outputs_1:
+        if(outputs_1.index(i)== len(outputs_1)-1 ):
+            print(i)
         else:
-            for j in i[1]:
-                v.append(j)
-        if i not in fd_violations:
-            fd_violations.append(i)
+            print(i, end=", ")
 
-    print_outputFDs(fd_singleton,fd_violations)
-    dependency_preserving(singles,v,R)
+
+    print()
+    print("SCHEMA 2:   ATTRIBUTES: "+ s2_string_attr+ "\t\tFUNCTIONAL DEPENDENCIES: ", end= " ")
+    if(len(outputs_2)==0):
+        print("NONE")
+    else:
+        for i in outputs_2:
+            if(outputs_2.index(i)== len(outputs_2)-1 ):
+                print(i)
+            else:
+                print(i, end=", ")
+    print("------------------------------------------------------------------------------------")
+    dependency_preserving(table_S1_closure,output_s2,s2_attribute,R)
+    print("\n"*2)
+
+
+ 
 
 #checks to see if s given table is dependency preserving after normalization
 #dependency preserving if the closure of R = closure of R1 union R2
-def dependency_preserving(singles,v,R):
-    attributes_R = []
-    attributes_R1 = []
-    attributes_R2 = []
+def dependency_preserving(table_S1,table_S2,s2_attribute,R):
+    s1_attribute = []
+    s1_a = []
+    R_attributes = []
+
+
+    #lists containing the right and left attributes of s1,s2,and R
+    right_list = []
+    left_list = []
+
+    right_listS2 = []
+    left_listS2 = []
+
+    right_listR = []
+    left_listR = []
+
+
+    #computing s1_attribute
+    for i in table_S1:
+        for j in i:
+            for x in j:
+                s1_attribute.append(x)
+
+    #compiting R_attributes
+    for i in R:
+        for j in i:
+            for x in j:
+                R_attributes.append(x)
+           
+
     
-    #computing the closure of R
-    for i in list(R):
-        if len(i[0]) == 1 and i[0] not in attributes_R:
-            attributes_R.append(i[0])
-        if len(i[1]) == 1 and i[1] not in attributes_R:
-            attributes_R.append(i[0])
-        if len(i[1]) >1:
-            for j in i[1] and j not in attributes_R:
-                attributes_R.append(j)
-        if len(i[0])>1:
-            for j in i[0]:
-                if j not in attributes_R:
-                    attributes_R.append(j)
-        closure_R = closure_BCNF(i[0],attributes_R)
 
-    #computing the closure of R1
-    fd_singleton = zip(singles[0::2],singles[1::2]) 
-    for i in list(fd_singleton):
-        if len(i[0]) == 1 and i[0] not in attributes_R1:
-            attributes_R1.append(i[0])
-        if len(i[1]) == 1 and i[1] not in attributes_R1:
-            attributes_R1.append(i[0])
-        if len(i[1]) >1:
-            for j in i[1] and j not in attributes_R1:
-                attributes_R1.append(j)
-        if len(i[0])>1:
-            for j in i[0]:
-                if j not in attributes_R1:
-                    attributes_R1.append(j)
-        closure_R1 = closure_BCNF(i[0],attributes_R1)
- 
-
-    #computing the closure of R2
-    fd_violations = zip(v[0::2],v[1::2])
-    for i in list(fd_violations):
-        if len(i[0]) == 1 and i[0] not in attributes_R2:
-            attributes_R2.append(i[0])
-        if len(i[1]) == 1 and i[1] not in attributes_R2:
-            attributes_R2.append(i[0])
-        if len(i[1]) >1:
-            for j in i[1] and j not in attributes_R2:
-                attributes_R2.append(j)
-        if len(i[0])>1:
-            for j in i[0]:
-                if j not in attributes_R2:
-                    attributes_R2.append(j)
-        closure_R2 = closure_BCNF(i[0],attributes_R2)
+    #calculate the closure for s1
+    for FD in table_S1:
+        for j in FD:
+            i = 0
+            str = ""
+            right = FD[1]
+            left = FD[0]
+            FD_set = set()
+            while i <= len(j):
+                if i != len(j):
+                    char = j[i]
+           
+                else:
+                    right_list.append(FD_set)
+                    FD_set = ()
+                    break
+                str = str+char
 
 
-    if closure_R == closure_R1+closure_R2:
-        print("THE RELATION IS DEPENDENCY PRESERVING")
-        print('\n'*35)
+                FD_set.add(str)
+                str = ""
+                if char in right:
+                    right_list.append(FD_set)
+                    FD_set = set()
+                    str = ""
+                    #print(right_list)
+                elif char in left:
+                    left_list.append(FD_set)
+                    FD_set = set()
+                    str = ""
+                   
+                i = i + 1
+    str_att=s1_attribute[0]
+    attributes= getAttr(str_att)
+    for i in left_list:
+        s1_closure = set(closure_BCNF(i,left_list, right_list))
 
+
+
+    #calculate the closure for s2
+    for FD in table_S2:
+        for j in FD:
+            i = 0
+            str = ""
+            if len(FD)> 1: 
+                right_s2 = FD[1]
+                left_s2 = FD[0]
+                FD_set = set()
+                while i <= len(j):
+                    if i != len(j):
+                        char = j[i]
+                       
+                    else:
+                        right_listS2.append(FD_set)
+                        FD_set = ()
+                        break
+                    str = str+char
+
+
+                    FD_set.add(str)
+                    str = ""
+                    if char in right_s2:
+                        right_listS2.append(FD_set)
+                        FD_set = set()
+                        str = ""
+                        #print(right_list)
+                    elif char in left_s2:
+                        left_listS2.append(FD_set)
+                        FD_set = set()
+                        str = ""
+                    
+                    i = i + 1
+        str_attS2=s2_attribute[0]
+        attributes_S2= getAttr(str_attS2)
+    for i in left_list:
+        s2_closure = set(closure_BCNF(i,left_listS2, right_listS2))
+
+
+     #calculate the closure for R
+    for FD in R:
+        for j in FD:
+            i = 0
+            str = ""
+            if len(FD) > 1:
+                right_R = FD[1]
+                left_R = FD[0]
+                FD_set = set()
+                while i <= len(j):
+                    if i != len(j):
+                        char = j[i]
+                      
+                    else:
+                        right_listR.append(FD_set)
+                        FD_set = ()
+                        break
+                    str = str+char
+                    FD_set.add(str)
+                    str = ""
+                    if char in right_R:
+                        right_listR.append(FD_set)
+                        FD_set = set()
+                        str = ""
+                    elif char in left_R:
+                        left_listR.append(FD_set)
+                        FD_set = set()
+                        str = ""     
+                    i = i + 1
+        str_att_R=R_attributes[0]
+        attributes= getAttr(str_att_R)
+    for i in left_list:
+        R_closure = set(closure_BCNF(i,left_listR, right_listR))
+
+    #to check if they are func dependent we see if union of s1 closure  and s2 closure  = r closure
+
+    union_closure = s1_closure.union(s2_closure)
+    if union_closure  == R_closure:
+        print()
+        print("THE RELATIONS IS DEPENDENCY PRESERVING")
+        print("------------------------------------------------------------------------------------")
     else:
-        print("THE RELATION IS NOT DEPENDENCY PRESERVING")
-        print('\n'*35)
-
-   
-def print_outputFDs(fd_singleton,fd_violations):
-    r = []
-    a = []
-    k = []
-    for i in fd_violations:
-        if i[0] != '':
-            i = i[0]+"=>"+i[1]
-            r.append(i)
-
-    #output the normalized functional dependencies
-    for i in fd_singleton:
-        if i[0]!='':
-
-            i = i[0]+"=>"+i[1]
-            a.append(i)
-
-    print('\n'*60)
-
-    #print R1
-    print('---------------------------------------R1----------------------------------------')
-    print()
-    print(a)
-    print()
-    print('---------------------------------------------------------------------------------')
-
-    print('\n'*3)
-
-    #print R2
-    print('---------------------------------------R2----------------------------------------')
-    print()
-    print(r)
-    print()
-    print('---------------------------------------------------------------------------------')
-    print()
-
+        print()
+        print("THE RELATIONS IS NOT DEPENDENCY PRESERVING")
+        print("------------------------------------------------------------------------------------")
 
 
 def closure_BCNF(attribute, left_list, right_list):
@@ -897,10 +1003,8 @@ def closure():
     print("--"*50)
     print("THE ATTRIBUTE CLOSURE OF", attr_str, "IS: ", closure_str)
     print("--"*50)
-    print()
-    decision = input("PRESS Q TO EXIT OR PRESS ANY KEY TO CONTINUE: ")
-    if decision == 'q' or decision == 'Q':
-        logout()
+
+    decision()
     
 
  
@@ -937,7 +1041,14 @@ def printTables():
 def logout():
     exit(0)
 
-
+# DETERMINES IF THE USER WANTS TO CONTINUE
+def decision():
+    print()
+    # DO YOU WANT TO CONTINUE
+    print("DO YOU WANT TO CONTINUE?")
+    decision = input("ENTER 'Q' or 'q' to Exit or Anything Else to continue: ")
+    if(decision == 'q' or decision == 'Q'):
+        logout()
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #------------------------------------MAIN FUNCTION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -951,8 +1062,11 @@ def main():
     # EXIT THE PROGRAM IF THE USER WANTS TO QUIT
     if filename == "Q" or filename == 'q':
         logout()
-
-    filename = "test.sqliteDB"
+    elif filename=="":
+        print("INVALID!")
+        logout()
+    #filename = "test.sqliteDB"
+    
     
     # Initialized the path to the database
     connection = sqlite3.connect("./" + filename)
@@ -981,7 +1095,6 @@ def main():
         # GO TO BCNF FUNCTION
         elif(decision == "1"):
             bcnf_initial()
-            break
 
         # GO TO CLOSOURE FUNCTION
         elif(decision == "2"):
@@ -1016,16 +1129,6 @@ def main():
 
             # Call to display results, if two sets are equivalent or not
             equal.done()
-
-
-            print()
-            # DO YOU WANT TO CONTINUE
-            print("DO YOU WANT TO CONTINUE?")
-            decision = input("ENTER 'Q' or 'q' to Exit or Anything Else to continue: ")
-            if(decision == 'q' or decision == 'Q'):
-                logout()
-
-
 
 main()
     
